@@ -37,7 +37,7 @@ Cython==3.0.11
 datasets==3.1.0
 decorator==5.1.1
 defusedxml==0.7.1
-detectron2 @ https://wheels-1251341229.cos.ap-shanghai.myqcloud.com/assets/whl/detectron2/detectron2-0.6-cp310-cp310-linux_x86_64.whl#sha256=7520d138c1589110ea2891eba7a686c6e62e037e8a4a0fac28f454d2fff00839
+# TODO detectron2
 dill==0.3.8
 diskcache==5.6.3
 distro==1.9.0
@@ -90,7 +90,7 @@ lightning==2.4.0
 lightning-utilities==0.11.8
 llvmlite==0.43.0
 lmdb==1.5.1
-lmdeploy==0.6.2.post1
+#TODO lmdeploy==0.6.2.post1
 lxml==5.3.0
 Markdown==3.7
 markdown-it-py==3.0.0
@@ -112,18 +112,19 @@ ninja==1.11.1.1
 nltk==3.9.1
 numba==0.60.0
 numpy==1.26.4
-nvidia-cublas-cu12==12.1.3.1
-nvidia-cuda-cupti-cu12==12.1.105
-nvidia-cuda-nvrtc-cu12==12.1.105
-nvidia-cuda-runtime-cu12==12.1.105
-nvidia-cudnn-cu12==8.9.2.26
-nvidia-cufft-cu12==11.0.2.54
-nvidia-curand-cu12==10.3.2.106
-nvidia-cusolver-cu12==11.4.5.107
-nvidia-cusparse-cu12==12.1.0.106
-nvidia-nccl-cu12==2.20.5
-nvidia-nvjitlink-cu12==12.6.77
-nvidia-nvtx-cu12==12.1.105
+# TODO
+# nvidia-cublas-cu12==12.1.3.1
+# nvidia-cuda-cupti-cu12==12.1.105
+# nvidia-cuda-nvrtc-cu12==12.1.105
+# nvidia-cuda-runtime-cu12==12.1.105
+# nvidia-cudnn-cu12==8.9.2.26
+# nvidia-cufft-cu12==11.0.2.54
+# nvidia-curand-cu12==10.3.2.106
+# nvidia-cusolver-cu12==11.4.5.107
+# nvidia-cusparse-cu12==12.1.0.106
+# nvidia-nccl-cu12==2.20.5
+# nvidia-nvjitlink-cu12==12.6.77
+# nvidia-nvtx-cu12==12.1.105
 omegaconf==2.3.0
 openai==1.3.5
 opencv-contrib-python==4.6.0.66
@@ -137,7 +138,7 @@ outlines==0.0.46
 packaging==24.1
 paddleocr==2.7.3
 paddlepaddle==2.6.2
-paddlepaddle-gpu==2.6.2
+# TODO paddlepaddle-gpu==2.6.2
 pandas==2.2.3
 pathspec==0.12.1
 pdf2docx==0.5.8
@@ -217,13 +218,17 @@ timm==0.9.16
 tokenizers==0.19.1
 tomli==2.0.2
 tomlkit==0.12.0
-torch==2.3.1
+#OSX Nope torch==2.3.1
+torch==2.2.2
 torchmetrics==1.5.1
-torchtext==0.18.0
-torchvision==0.18.1
+#OSX nope torchtext==0.18.0
+torchtext==0.17.2
+#OSX Nope torchvision==0.18.1
+torchvision==0.17.2
 tqdm==4.66.6
 transformers==4.42.4
-triton==2.3.1
+#OSX Nope triton==2.3.1
+
 typer==0.13.1
 typing_extensions==4.12.2
 tzdata==2024.2
