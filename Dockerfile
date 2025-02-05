@@ -9,9 +9,9 @@ RUN apt-get -qq update && \
     pip install --upgrade pip
     
 # Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+#COPY requirements.txt .
+#RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install flask 
 COPY . .
 
-CMD ["python", "-u", "./server.py"]
+CMD [ "flask", "--app", "server", "run"]
