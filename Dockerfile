@@ -21,8 +21,8 @@ RUN pip install -U --force-reinstall pip setuptools wheel && \
 # apt-get update && apt-get install -y --no-install-recommends libgomp1=12.2.0-14 libsndfile1=1.2.0-1;
     
     
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements-linux-gpudocker-build.txt .
+RUN pip install --no-cache-dir -r requirements-linux-gpudocker-build.txt
 
 COPY . .
 
