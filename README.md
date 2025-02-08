@@ -12,11 +12,10 @@ docker run -i  -p 8080:8080 -t latextranscribe
 
 ### Local build with Docker
 
-(This is sketch and these instructions are untested - assume there are typos, errors, guesses, and ommissions that need to be fixed)
+docker build -t latextranscribe .
+docker run -p 127.0.0.1:8000:8000  latextranscribe 
 
-docker build -t latextranscribe
-docker run -i  -p 8080:8080 -t latextranscribe
-
+Then open http://127.0.0.1:8000 in your favorite browser
 
 ### Local build without docker 
 

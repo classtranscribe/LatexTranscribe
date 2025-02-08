@@ -37,7 +37,7 @@ Cython==3.0.11
 datasets==3.1.0
 decorator==5.1.1
 defusedxml==0.7.1
-detectron2 @ https://wheels-1251341229.cos.ap-shanghai.myqcloud.com/assets/whl/detectron2/detectron2-0.6-cp310-cp310-linux_x86_64.whl#sha256=7520d138c1589110ea2891eba7a686c6e62e037e8a4a0fac28f454d2fff00839
+
 dill==0.3.8
 diskcache==5.6.3
 distro==1.9.0
