@@ -4,34 +4,34 @@
 
 (This is sketch and these instructions are untested - assume there are typos, errors, guesses (e.g. Port number), and ommissions that need to be fixed)
 
-docker pull classtranscribe/latextranscribe:latest
-
-docker run -i  -p 8080:8080 -t latextranscribe
+```sh
+$ docker pull classtranscribe/latextranscribe:latest
+$ docker run -i -p 8080:8080 -t latextranscribe
+```
 
 ## Building Locally
 
 ### Local build with Docker
-
-(This is sketch and these instructions are untested - assume there are typos, errors, guesses, and ommissions that need to be fixed)
-
-docker build -t latextranscribe
-docker run -i  -p 8080:8080 -t latextranscribe
-
-
-### Local build without docker 
-
-(This is sketch and these instructions are untested - assume there are typos, errors, guesses, and ommissions that need to be fixed)
+- Currently only installs CPU dependencies.
+```sh
+$ docker build -t latextranscribe -f Dockerfile.cpu .
+$ docker run --name latextranscribe-test-server --rm -i -p 8080:80 -t latextranscribe
+```
 
 
-Assuming you have python3.11 installed. Note these instructions essentialy mirror the steps in Dockerfile.
+### Local build without Docker
 
+- Install the [uv](https://docs.astral.sh/uv/getting-started/installation/#installation-methods) package manager.
+- Create a virtual environment and install the dependencies:
 ````sh
-python3.11 -m venv venv
-source ./venv/bin/activate
-
-pip install --upgrade pip
-pip install -r requirements.txt
-Hmm todo
-
+$ uv sync --extra cpu
+````
+- Run the example web server (`uv run` runs `python` in the virtual environment):
+````sh
+$ uv run uvicorn example-server:app --host 0.0.0.0 --port 8080
+````
+- Run the pipeline:
+````sh
+$ uv run main.py
 ````
 

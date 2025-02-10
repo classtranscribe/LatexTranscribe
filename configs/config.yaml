@@ -1,5 +1,5 @@
-input_path: /work/hdd/bdsh/dzhao3/data/sample
-output_path: /work/hdd/bdsh/dzhao3/output
+input_path: /Users/louis/Documents/project/research/giant/LatexTranscribe/input
+output_path: /Users/louis/Documents/project/research/giant/LatexTranscribe/output
 models:
   formula_detection:
     model_name: formula_detection_yolo

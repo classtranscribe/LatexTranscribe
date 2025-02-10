@@ -1,6 +1,6 @@
 AUG:
   DETR: true
-CACHE_DIR: ~/cache/huggingface
+CACHE_DIR: .cache/huggingface
 CUDNN_BENCHMARK: false
 DATALOADER:
   ASPECT_RATIO_GROUPING: true
@@ -69,7 +69,7 @@ MODEL:
     FREEZE_AT: 2
     NAME: build_vit_fpn_backbone
   CONFIG_PATH: ''
-  DEVICE: cuda
+  DEVICE: cpu
   FPN:
     FUSE_TYPE: sum
     IN_FEATURES:
