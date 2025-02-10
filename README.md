@@ -10,28 +10,41 @@ $ docker run -i -p 8080:8080 -t latextranscribe
 ```
 
 ## Building Locally
+- Recommended: Install the [uv](https://docs.astral.sh/uv/getting-started/installation/#installation-methods) package manager.
 
-### Local build with Docker
+#### Downloading the ML models for Pipeline
+- Download the ML models first (warning: large download).
+    - With `uv` (no dependencies required thanks to [inline script dependencies](https://docs.astral.sh/uv/guides/scripts/#declaring-script-dependencies)):
+    ```sh
+    $ uv run download_models.py
+    ```
+    - Or with `pip`:
+    ```sh
+    $ pip install huggingface-hub
+    $ python download_models.py
+    ```
+Now, there are two options to build and run the project.
+
+#### Local build with Docker
 - Currently only installs CPU dependencies.
-```sh
-$ docker build -t latextranscribe -f Dockerfile.cpu .
-$ docker run --name latextranscribe-test-server --rm -i -p 8080:80 -t latextranscribe
-```
+- Build and run the Docker image:
+    ```sh
+    $ docker build -t latextranscribe -f Dockerfile.cpu .
+    $ docker run --name latextranscribe-test-server --rm -i -p 8080:80 -t latextranscribe
+    ```
+- Go to `http://localhost:8080` and you should now see `Hello, World!`
 
-
-### Local build without Docker
-
-- Install the [uv](https://docs.astral.sh/uv/getting-started/installation/#installation-methods) package manager.
+#### Local build without Docker
 - Create a virtual environment and install the dependencies:
-````sh
-$ uv sync --extra cpu
-````
+    ```sh
+    $ uv sync --extra cpu
+    ```
 - Run the example web server (`uv run` runs `python` in the virtual environment):
-````sh
-$ uv run uvicorn example-server:app --host 0.0.0.0 --port 8080
-````
-- Run the pipeline:
-````sh
-$ uv run main.py
-````
+    ```sh
+    $ uv run uvicorn example-server:app --host 0.0.0.0 --port 8080
+    ```
+- Or run the ML pipeline:
+    ```sh
+    $ uv run main.py
+    ```
 
