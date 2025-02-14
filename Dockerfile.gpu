@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/root/.cache \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync \
-        --extra cpu \
+        --extra cu124 \
         --locked \
         --no-dev \
         --no-install-project \
@@ -54,14 +54,14 @@ RUN --mount=type=cache,target=/root/.cache \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync \
-        --extra cpu \
+        --extra cu124 \
         --locked \
         --no-dev \
         --no-install-project
 
 ##########################################################################
 
-FROM python:3.11-slim-bookworm
+FROM nvidia/cuda:12.6.3-base-ubuntu22.04
 SHELL ["sh", "-exc"]
 
 # Optional: add the application virtualenv to search path.

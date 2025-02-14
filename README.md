@@ -26,18 +26,28 @@ $ docker run -i -p 8080:8080 -t latextranscribe
 Now, there are two options to build and run the project.
 
 #### Local build with Docker
-- Currently only installs CPU dependencies.
 - Build and run the Docker image:
+    - CPU:
     ```sh
     $ docker build -t latextranscribe -f Dockerfile.cpu .
     $ docker run --name latextranscribe-test-server --rm -i -p 8080:80 -t latextranscribe
+    ```
+    - GPU (CUDA >= 12.4):
+    ```sh
+    $ docker build -t latextranscribe -f Dockerfile.gpu .
+    $ docker run --name latextranscribe-test-server --rm --gpus '"device=0"' -i -p 8080:80 -t latextranscribe
     ```
 - Go to `http://localhost:8080` and you should now see `Hello, World!`
 
 #### Local build without Docker
 - Create a virtual environment and install the dependencies:
+    - CPU:
     ```sh
     $ uv sync --extra cpu
+    ```
+    - GPU (CUDA >= 12.4):
+    ```sh
+    $ uv sync --extra cu124
     ```
 - Run the example web server (`uv run` runs `python` in the virtual environment):
     ```sh
