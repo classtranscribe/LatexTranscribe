@@ -4,9 +4,10 @@ on:
       - main
       - staging
       - expt
-
   pull_request:
-  
+    branches:
+      - main
+      - staging
   # Trigger the workflow on release activity
   release:
     # Only use the types keyword to narrow down the activity types that will trigger your workflow.
@@ -29,9 +30,10 @@ jobs:
         name:
           - latextranscribe
         include:
-          - name: latextranscribe
-            FOLDER: .
-            IMAGE: latextranscribe
+          - name: latextranscribe-server
+            FOLDER: ./server
+            IMAGE: latextranscribe-server
+            DOCKERFILE: Dockerfile.cpu
 
     steps:
       - uses: actions/checkout@v2
@@ -45,7 +47,7 @@ jobs:
             BRANCH=${GITHUB_REF##*/}
           fi
           echo "GITHUB_BRANCH=${BRANCH}" >> $GITHUB_ENV
-          
+
           # Commit was for main/release branch, build a new version
           if [ "$BRANCH" == "master" -o "$BRANCH" == "main" ]; then
             version="$(cat gui/package.json | jq -r .version)"
@@ -79,6 +81,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           context: ${{ matrix.FOLDER }}
           tags: "${{ env.TAGS }}"
+          dockerfile: ${{ matrix.DOCKERFILE }}
           buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
           no_push: true
 
@@ -116,4 +119,5 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           context: ${{ matrix.FOLDER }}
           tags: "${{ env.TAGS }}"
+          dockerfile: ${{ matrix.DOCKERFILE }}
           buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
