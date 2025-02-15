@@ -4,6 +4,9 @@ models/MFD/*
 models/MFR/*
 models/TabRec/*
 
+input/
+output/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
