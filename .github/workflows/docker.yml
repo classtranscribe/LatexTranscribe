@@ -79,7 +79,6 @@ jobs:
           name: ${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ matrix.IMAGE }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          context: ${{ matrix.FOLDER }}
           workdir: ${{ matrix.FOLDER }}
           tags: "${{ env.TAGS }}"
           dockerfile: ${{ matrix.DOCKERFILE }}
@@ -118,7 +117,6 @@ jobs:
           name: ${{ env.DOCKERHUB_ORG }}/${{ matrix.IMAGE }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          context: ${{ matrix.FOLDER }}
           workdir: ${{ matrix.FOLDER }}
           tags: "${{ env.TAGS }}"
           dockerfile: ${{ matrix.DOCKERFILE }}
