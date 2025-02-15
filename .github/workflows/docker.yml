@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         name:
-          - latextranscribe
+          - latextranscribe-server
         include:
           - name: latextranscribe-server
             FOLDER: ./server
@@ -36,8 +36,12 @@ jobs:
             DOCKERFILE: Dockerfile.cpu
 
     steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v4
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+      - name: Download model using huggingface-cli
+        run: |
+          HF_HUB_ENABLE_HF_TRANSFER=1 uvx --from "huggingface_hub[cli,hf_transfer]" huggingface-cli download opendatalab/pdf-extract-kit-1.0 --include "models/Layout/*" --include "models/MFD/*" --include "models/MFR/*" --include "models/TabRec/*" --local-dir "./server"
       # calculate some variables that are used later
       - name: github branch
         run: |

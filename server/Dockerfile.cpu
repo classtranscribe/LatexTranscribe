@@ -92,12 +92,11 @@ RUN chmod +x /docker-entrypoint.sh
 COPY --from=build --chown=app:app /app /app
 
 # Copy files needed to run the Python application
-
 COPY models/ /app/models/
 
 COPY configs/ /app/configs/
 COPY src/ /app/src/
-COPY *.py /app/
+COPY app.py example-server.py main.py /app/
 
 USER app
 WORKDIR /app
