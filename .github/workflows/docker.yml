@@ -22,26 +22,20 @@ env:
   DOCKERHUB_ORG: classtranscribe
 
 jobs:
-  docker:
+  build-server:
+    name: Build server Docker image
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        name:
-          - latextranscribe-server
-        include:
-          - name: latextranscribe-server
-            FOLDER: ./server
-            IMAGE: latextranscribe-server
-            DOCKERFILE: Dockerfile.cpu
-
+    env:
+      FOLDER: ./server
+      IMAGE: latextranscribe-server
+      DOCKERFILE: Dockerfile.cpu
     steps:
       - uses: actions/checkout@v4
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v5
       - name: Download model weights using huggingface_hub
         run: |
-          HF_HUB_ENABLE_HF_TRANSFER=1 uv run download_models.py
+          HF_HUB_ENABLE_HF_TRANSFER=1 uv run server/download_models.py
       # calculate some variables that are used later
       - name: github branch
         run: |
@@ -71,7 +65,7 @@ jobs:
 
       # build the docker image, this will always run to make sure
       # the Dockerfile still works.
-      - name: Build image
+      - name: Build Docker image
         uses: elgohr/Publish-Docker-Github-Action@2.22
         env:
           BRANCH: ${{ env.GITHUB_BRANCH }}
@@ -80,12 +74,12 @@ jobs:
           GITSHA1: ${{ github.sha  }}
         with:
           registry: docker.pkg.github.com
-          name: ${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ matrix.IMAGE }}
+          name: ${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ env.IMAGE }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          workdir: ${{ matrix.FOLDER }}
+          workdir: ${{ env.FOLDER }}
           tags: "${{ env.TAGS }}"
-          dockerfile: ${{ matrix.DOCKERFILE }}
+          dockerfile: ${{ env.DOCKERFILE }}
           buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
           no_push: true
 
@@ -118,10 +112,10 @@ jobs:
           BUILDNUMBER: ${{ github.run_number }}
           GITSHA1: ${{ github.sha  }}
         with:
-          name: ${{ env.DOCKERHUB_ORG }}/${{ matrix.IMAGE }}
+          name: ${{ env.DOCKERHUB_ORG }}/${{ env.IMAGE }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          workdir: ${{ matrix.FOLDER }}
+          workdir: ${{ env.FOLDER }}
           tags: "${{ env.TAGS }}"
-          dockerfile: ${{ matrix.DOCKERFILE }}
+          dockerfile: ${{ env.DOCKERFILE }}
           buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
