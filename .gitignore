@@ -1,8 +1,8 @@
 # Custom
-models/Layout/*
-models/MFD/*
-models/MFR/*
-models/TabRec/*
+server/models/Layout/*
+server/models/MFD/*
+server/models/MFR/*
+server/models/TabRec/*
 
 input/
 output/
