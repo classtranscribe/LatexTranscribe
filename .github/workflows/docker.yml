@@ -80,6 +80,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           context: ${{ matrix.FOLDER }}
+          workdir: ${{ matrix.FOLDER }}
           tags: "${{ env.TAGS }}"
           dockerfile: ${{ matrix.DOCKERFILE }}
           buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
@@ -118,6 +119,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           context: ${{ matrix.FOLDER }}
+          workdir: ${{ matrix.FOLDER }}
           tags: "${{ env.TAGS }}"
           dockerfile: ${{ matrix.DOCKERFILE }}
           buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
