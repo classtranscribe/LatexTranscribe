@@ -35,7 +35,9 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Download model weights using huggingface_hub
         run: |
-          HF_HUB_ENABLE_HF_TRANSFER=1 uv run server/download_models.py
+          cd server
+          HF_HUB_ENABLE_HF_TRANSFER=1 uv run download_models.py
+          du -hs models/
       # calculate some variables that are used later
       - name: github branch
         run: |
