@@ -47,6 +47,7 @@ async def upload_image(file: UploadFile = File(...)):
         # Process the image
         processed_image = process_image(image)
         # processed_image.save("./test.png")
+        
 
         # Convert processed image back to bytes
         img_bytes = io.BytesIO()
