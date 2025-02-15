@@ -58,12 +58,14 @@ async function submitFile() {
     return;
   }
   const formData = new FormData();
-  formData.append('image', uploadedFile.value);
+  formData.append('file', uploadedFile.value);
   try {
-    const response = await axios.post('http://127.0.0.1:5000/submitimage', formData, {
+    const response = await axios.post('http://localhost:8000/upload/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Accept': 'image/png', 
       },
+      responseType: 'arraybuffer',
     });
     console.log(response.data.message);
     toggleResponse(response.data.message);
