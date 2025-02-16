@@ -25,12 +25,3 @@ models:
     output_format: latex
     lmdeploy: False
     flash_atten: True
-  base_recognition:
-    model_name: omniparser
-    model_path: models/OP/icon_detect/best.pt
-    box_threshold: 0.05
-    draw_bbox_config:
-      text_scale: 0.8
-      text_thickness: 2
-      text_padding: 3
-      thickness: 3

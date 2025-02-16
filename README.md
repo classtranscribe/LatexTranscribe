@@ -16,12 +16,12 @@ $ docker run -i -p 8080:8080 -t latextranscribe
 - Download the ML models first (warning: large download).
     - With `uv` (no dependencies required thanks to [inline script dependencies](https://docs.astral.sh/uv/guides/scripts/#declaring-script-dependencies)):
     ```sh
-    $ uv run download_models.py
+    $ cd server && uv run download_models.py
     ```
     - Or with `pip`:
     ```sh
     $ pip install huggingface-hub
-    $ python download_models.py
+    $ cd server && python download_models.py
     ```
 Now, there are two options to build and run the project.
 
@@ -29,17 +29,18 @@ Now, there are two options to build and run the project.
 - Build and run the Docker image:
     - CPU:
     ```sh
-    $ docker build -t latextranscribe -f Dockerfile.cpu .
+    $ docker build -t latextranscribe -f server/Dockerfile.cpu ./server/
     $ docker run --name latextranscribe-test-server --rm -i -p 8080:80 -t latextranscribe
     ```
     - GPU (CUDA >= 12.4):
     ```sh
-    $ docker build -t latextranscribe -f Dockerfile.gpu .
+    $ docker build -t latextranscribe -f server/Dockerfile.gpu ./server/
     $ docker run --name latextranscribe-test-server --rm --gpus '"device=0"' -i -p 8080:80 -t latextranscribe
     ```
 - Go to `http://localhost:8080` and you should now see `Hello, World!`
 
 #### Local build without Docker
+- Work in the `server` directory (`$ cd server/`).
 - Create a virtual environment and install the dependencies:
     - CPU:
     ```sh
@@ -58,3 +59,9 @@ Now, there are two options to build and run the project.
     $ uv run main.py
     ```
 
+## Developing Locally
+- Either do [Local build without Docker](#local-build-without-docker), or use `docker compose` in the project root:
+    ```sh
+    $ docker compose watch
+    ```
+- Go to `http://localhost:8080` and you should now see `Hello, World!`

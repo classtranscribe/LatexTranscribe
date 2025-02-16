@@ -1,6 +1,3 @@
-import cv2
-import os
-
 from src.image_object import ImageObject
 from src.utils import get_image_paths
 from src.registry import MODEL_REGISTRY
@@ -10,13 +7,12 @@ from src.tasks import (
     formula_detection,
     formula_recognition,
     layout_detection,
-    omniparser,
     table_recognition,
 )
 
 
 class Pipeline:
-    def __init__(self, config):
+    def __init__(self, config, input_path: str, outut_path: str):
         self.models = {}
         for task in config["models"]:
             ModelClass = MODEL_REGISTRY.get(config["models"][task]["model_name"])
@@ -24,13 +20,12 @@ class Pipeline:
 
         self.images = {}
 
-        if config["input_path"] is not None:
-            image_paths = get_image_paths(config["input_path"])
-            for image_path in image_paths:
-                image_name = image_path.split("/")[-1].split(".")[0]
-                self.images[image_name] = ImageObject(image_path)
+        image_paths = get_image_paths(input_path)
+        for image_path in image_paths:
+            image_name = image_path.split("/")[-1].split(".")[0]
+            self.images[image_name] = ImageObject(image_path)
 
-        self.output_path = config["output_path"]
+        self.output_path = outut_path
 
     def add_image(self, name, image):
         self.images[name] = ImageObject(image=image, image_name=name)
@@ -56,25 +51,16 @@ class Pipeline:
                 if cls in ["formula", "table"]:
                     task = f"{cls}_recognition"
                 else:
-                    # task = "base_recognition"
                     continue
 
                 out = self.models[task].predict(crop)
                 if out["vis"] is not None:
                     image.add_visualization(task, out["vis"])
                 image.add_results(task, out["results"], cls, box)
-            try:
-                out = self.models["base_recognition"].predict(image.get_curr_image())
-                if out["vis"] is not None:
-                    image.add_visualization("base_recognition", out["vis"])
-                image.add_results("base_recognition", out["results"])
-            except:
-                pass
 
     def predict(self, save=False):
         self.detect_candidates("layout_detection")
         self.detect_candidates("formula_detection")
-        # self.detect_candidates("layout_detection")
         self.transcribe_image()
 
         if save:

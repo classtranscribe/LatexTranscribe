@@ -4,8 +4,8 @@ server/models/MFD/
 server/models/MFR/
 server/models/TabRec/
 
-server/input/
-server/output/
+server/inputs/
+server/outputs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

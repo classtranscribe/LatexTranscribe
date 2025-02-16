@@ -1,6 +1,5 @@
 import torch
 
-from PIL import Image
 from struct_eqtable import build_model
 from src.registry import MODEL_REGISTRY
 

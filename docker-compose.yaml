@@ -1,0 +1,15 @@
+services:
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.cpu
+    ports:
+      - 8080:80
+    command: ["uvicorn", "example-server:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    develop:
+      watch:
+        - action: sync
+          path: ./server
+          target: /app
+          ignore:
+            - .venv/
