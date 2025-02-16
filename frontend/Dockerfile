@@ -14,4 +14,4 @@ RUN npm run build
 FROM joseluisq/static-web-server:latest AS prod
 COPY --from=build /app/dist /app
 EXPOSE 80
-CMD ["static-web-server", "--port", "80", "--root", "/app"]
+CMD ["--port", "80", "--root", "/app"]

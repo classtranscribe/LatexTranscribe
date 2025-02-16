@@ -1,9 +1,9 @@
 # Latex Transcribe
 
 ## Quick Start
-- To develop locally, [download the ML models](#downloading-the-ml-models-for-pipeline), then [setup the environment without Docker](#local-build-without-docker).
-- To build a full Docker image, [download the ML models](#downloading-the-ml-models-for-pipeline), then [build the image (CPU / GPU)](#building-docker-image-locally).
-
+### Backend
+- To develop locally, [download the ML models](#downloading-the-ml-models-for-pipeline), then [setup the backend/frontend environment without Docker](#local-build-without-docker).
+- To build a full Docker image, [download the ML models](#downloading-the-ml-models-for-pipeline), then [build the backend (CPU / GPU) and frontend images](#building-docker-image-locally).
 
 ## Running the official DockerHub image
 - Only up-to-date with the main branch.
@@ -25,22 +25,37 @@ $ docker run -i -p 8080:80 -t latextranscribe
     $ cd server && python download_models.py
     ```
 ## Building Docker Image Locally
-- Build and run the Docker image:
+### Backend
+- Build and run the backend Docker image:
     - CPU:
     ```sh
-    $ docker build -t latextranscribe -f server/Dockerfile.cpu ./server/
-    $ docker run --name latextranscribe-test-server --rm -i -p 8080:80 -t latextranscribe
+    $ docker build -t latextranscribe-backend -f server/Dockerfile.cpu ./server/
+    $ docker run --name latextranscribe-backend --rm -i -p 8081:80 -t latextranscribe-backend
     ```
     - GPU (CUDA >= 12.4):
     ```sh
-    $ docker build -t latextranscribe -f server/Dockerfile.gpu ./server/
-    $ docker run --name latextranscribe-test-server --rm --gpus '"device=0"' -i -p 8080:80 -t latextranscribe
+    $ docker build -t latextranscribe-backend -f server/Dockerfile.gpu ./server/
+    $ docker run --name latextranscribe-backend --rm --gpus '"device=0"' -i -p 8081:80 -t latextranscribe-backend
     ```
-- Go to `http://localhost:8080` and you should now see `Hello, World!`
+- Go to `http://localhost:8081` and you should now see `The server is running!`
+### Frontend
+- Build and run the frontend Docker image:
+    ```sh
+    $ docker build -t latextranscribe-frontend -f frontend/Dockerfile ./frontend/
+    $ docker run --name latextranscribe-frontend --rm -i -p 8080:80 -t latextranscribe-frontend
+    ```
+- Go to `http://localhost:8080` and you should now see the frontend.
 
 ## Developing Locally
 - There are two options to develop locally.
+    ### Docker Compose Watch
+    - Run in the project root:
+        ```sh
+        $ docker compose up --build --watch
+        ```
+    - Go to `http://localhost:8080` and you should now see the frontend.
     ### Local build without Docker
+    #### Backend
     - Switch into the `server` directory:
         ```sh
         $ cd server/
@@ -54,17 +69,25 @@ $ docker run -i -p 8080:80 -t latextranscribe
         ```sh
         $ uv sync --extra cu124
         ```
-    - Run the example web server (`uv run` runs `python` in the virtual environment):
+    - Run the server (`uv run` runs `python` in the virtual environment):
         ```sh
-        $ uv run uvicorn example-server:app --host 0.0.0.0 --port 8080
+        $ uv run uvicorn app:app --host 0.0.0.0 --port 8081
         ```
-    - Or run the ML pipeline:
+    - TESTING – Or run the ML pipeline:
         ```sh
         $ uv run main.py
         ```
-    ### Docker Compose Watch
-    - Run in the project root:
+    #### Frontend
+    - Switch into the `frontend` directory:
         ```sh
-        $ docker compose watch
+        $ cd frontend/
         ```
-    - Go to `http://localhost:8080` and you should now see `Hello, World!`
+    - Install the dependencies:
+        ```sh
+        $ npm install
+        ```
+    - Run the development server:
+        ```sh
+        $ npm run dev
+        ```
+    - Go to `http://localhost:5173` and you should now see the frontend.
