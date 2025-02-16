@@ -1,8 +1,11 @@
 # Custom
-server/models/Layout/*
-server/models/MFD/*
-server/models/MFR/*
-server/models/TabRec/*
+server/models/Layout/
+server/models/MFD/
+server/models/MFR/
+server/models/TabRec/
+
+server/inputs/
+server/outputs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
