@@ -13,7 +13,7 @@ snapshot_download(
     allow_patterns=[
         "models/Layout/*",
         "models/MFD/*",
-        "models/MFR/*",
+        "models/MFR/unimernet_base/*",
         "models/TabRec/*",
     ],
 )
