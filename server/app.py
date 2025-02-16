@@ -19,12 +19,18 @@ app.add_middleware(
 )
 
 config_path = "./configs/config.yaml"
-pipeline = Pipeline(load_config(config_path))
+# TODO: Fix image paths
+# pipeline = Pipeline(load_config(config_path), "", "")
 
 
 def process_image(image: Image.Image) -> Image.Image:
     """Example image processing function (grayscale conversion)."""
     return image.convert("L")
+
+
+@app.get("/")
+async def home():
+    return "The server is running!"
 
 
 @app.post("/upload/")

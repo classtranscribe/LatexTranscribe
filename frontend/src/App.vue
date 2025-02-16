@@ -60,7 +60,7 @@ async function submitFile() {
   const formData = new FormData();
   formData.append('file', uploadedFile.value);
   try {
-    const response = await axios.post('http://localhost:8000/upload/', formData, {
+    const response = await axios.post(`${import.meta.env.VITE_ROOT_API}/upload/`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Accept': 'image/png', 

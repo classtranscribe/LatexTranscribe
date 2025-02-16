@@ -81,6 +81,8 @@ RUN apt-get update -qy && apt-get install -qyy \
     -o APT::Install-Suggests=false \
     libpcre3 \
     libxml2 \
+    libgl1 \
+    libglib2.0-0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -92,14 +94,13 @@ RUN chmod +x /docker-entrypoint.sh
 COPY --from=build --chown=app:app /app /app
 
 # Copy files needed to run the Python application
-
 COPY models/ /app/models/
 
 COPY configs/ /app/configs/
 COPY src/ /app/src/
-COPY *.py /app/
+COPY app.py example-server.py main.py /app/
 
 USER app
 WORKDIR /app
 
-CMD ["uvicorn", "example-server:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]

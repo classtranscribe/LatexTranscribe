@@ -3,9 +3,10 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile.cpu
+    image: latextranscribe-server
     ports:
-      - 8080:80
-    command: ["uvicorn", "example-server:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+      - 8081:80
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     develop:
       watch:
         - action: sync
@@ -13,3 +14,17 @@ services:
           target: /app
           ignore:
             - .venv/
+  frontend:
+    build:
+      context: ./frontend
+      # https://docs.docker.com/reference/compose-file/build/#target
+      target: dev
+    image: latextranscribe-frontend
+    ports:
+      - 8080:5173
+    command: ["npm", "run", "dev"]
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src

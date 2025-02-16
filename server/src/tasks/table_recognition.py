@@ -34,7 +34,7 @@ class TableParsingStructEqTable:
             lmdeploy=self.lmdeploy,
             flash_attn=self.flash_attn,
             batch_size=self.batch_size,
-        ).to("mps")
+        ).to("cpu")
 
     def predict(self, image):
         results = self.model(image, output_format=self.default_format)
