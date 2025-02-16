@@ -21,9 +21,11 @@ app.add_middleware(
 config_path = "./configs/config.yaml"
 pipeline = Pipeline(load_config(config_path))
 
+
 def process_image(image: Image.Image) -> Image.Image:
     """Example image processing function (grayscale conversion)."""
     return image.convert("L")
+
 
 @app.post("/upload/")
 async def upload_image(file: UploadFile = File(...)):
@@ -39,7 +41,6 @@ async def upload_image(file: UploadFile = File(...)):
         # Process the image
         processed_image = process_image(image)
         # processed_image.save("./test.png")
-        
 
         # Convert processed image back to bytes
         img_bytes = io.BytesIO()
@@ -47,6 +48,6 @@ async def upload_image(file: UploadFile = File(...)):
         img_bytes.seek(0)
 
         return Response(content=img_bytes.read(), media_type="image/png")
-    
+
     except Exception as e:
         return Response(status=500)
