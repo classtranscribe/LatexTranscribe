@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
 
 const sampleImage = 'src/images/sample.png';
 const sampleImageResult = 'src/images/udlmock1result.png';
@@ -60,7 +59,7 @@ async function submitFile() {
   const formData = new FormData();
   formData.append('file', uploadedFile.value);
   try {
-    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/upload/`, {
+    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/upload`, {
       method: 'POST',
       body: formData,
       headers: {

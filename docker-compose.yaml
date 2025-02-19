@@ -6,7 +6,7 @@ services:
     image: latextranscribe
     ports:
       - 8081:80
-    command: ["gunicorn", "-w", "2", "app:app", "--bind", "0.0.0.0:80", "--reload", "--access-logfile", "'-'"]
+    command: ["gunicorn", "-w", "2", "app:app", "--bind", "0.0.0.0:80", "--reload", "--access-logfile", "'-'", "--log-level", "debug"]
     develop:
       watch:
         - action: sync

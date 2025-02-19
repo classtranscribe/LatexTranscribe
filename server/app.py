@@ -24,6 +24,7 @@ def process_image(image: Image.Image) -> Image.Image:
 
 @app.route("/upload", methods=["POST"])
 def upload_image():
+    print(request.files, flush=True)
     if "file" not in request.files:
         return jsonify({"message": "No file part"})
     file = request.files["file"]
@@ -44,7 +45,7 @@ def upload_image():
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!?</p>"
+    return jsonify({"message": "Hello, World!"})
 
 
 @app.route("/sanitycheck")
