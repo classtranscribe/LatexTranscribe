@@ -693,6 +693,18 @@ wheels = [
 ]
 
 [[package]]
+name = "flask-cors"
+version = "5.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flask" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4f/d0/d9e52b154e603b0faccc0b7c2ad36a764d8755ef4036acbf1582a67fb86b/flask_cors-5.0.0.tar.gz", hash = "sha256:5aadb4b950c4e93745034594d9f3ea6591f734bb3662e16e255ffbf5e89c88ef", size = 30954 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/56/07/1afa0514c876282bebc1c9aee83c6bb98fe6415cf57b88d9b06e7e29bf9c/Flask_Cors-5.0.0-py2.py3-none-any.whl", hash = "sha256:b9e307d082a9261c100d8fb0ba909eec6a228ed1b60a8315fd85f783d61910bc", size = 14463 },
+]
+
+[[package]]
 name = "fonttools"
 version = "4.55.8"
 source = { registry = "https://pypi.org/simple" }
@@ -854,6 +866,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/79/6a/5df64b6df405a1ed1482cb6c10044b06ec47fd28e87c2232dbcf435ecb33/grpcio-1.70.0-cp313-cp313-musllinux_1_1_x86_64.whl", hash = "sha256:0a5c78d5198a1f0aa60006cd6eb1c912b4a1520b6a3968e677dbcba215fabb40", size = 6190982 },
     { url = "https://files.pythonhosted.org/packages/42/aa/aeaac87737e6d25d1048c53b8ec408c056d3ed0c922e7c5efad65384250c/grpcio-1.70.0-cp313-cp313-win32.whl", hash = "sha256:fe9dbd916df3b60e865258a8c72ac98f3ac9e2a9542dcb72b7a34d236242a5ce", size = 3598359 },
     { url = "https://files.pythonhosted.org/packages/1f/79/8edd2442d2de1431b4a3de84ef91c37002f12de0f9b577fb07b452989dbc/grpcio-1.70.0-cp313-cp313-win_amd64.whl", hash = "sha256:4119fed8abb7ff6c32e3d2255301e59c316c22d31ab812b3fbcbaf3d0d87cc68", size = 4293938 },
+]
+
+[[package]]
+name = "gunicorn"
+version = "23.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/72/9614c465dc206155d93eff0ca20d42e1e35afc533971379482de953521a4/gunicorn-23.0.0.tar.gz", hash = "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec", size = 375031 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cb/7d/6dac2a6e1eba33ee43f318edbed4ff29151a49b5d37f080aad1e6469bca4/gunicorn-23.0.0-py3-none-any.whl", hash = "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d", size = 85029 },
 ]
 
 [[package]]
@@ -1112,6 +1136,8 @@ dependencies = [
     { name = "detectron2" },
     { name = "fastapi", extra = ["standard"] },
     { name = "flask" },
+    { name = "flask-cors" },
+    { name = "gunicorn" },
     { name = "huggingface-hub" },
     { name = "matplotlib" },
     { name = "opencv-python-headless" },
@@ -1141,6 +1167,8 @@ requires-dist = [
     { name = "detectron2", git = "https://github.com/facebookresearch/detectron2.git" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.8" },
     { name = "flask", specifier = ">=3.1.0" },
+    { name = "flask-cors", specifier = ">=5.0.0" },
+    { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "huggingface-hub", specifier = ">=0.28.1" },
     { name = "matplotlib", specifier = ">=3.10.0" },
     { name = "opencv-python-headless", specifier = ">=4.11.0.86" },
