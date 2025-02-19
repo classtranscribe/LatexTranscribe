@@ -103,4 +103,4 @@ COPY app.py example-server.py main.py /app/
 USER app
 WORKDIR /app
 
-CMD ["gunicorn", "-w", "2", "app:app", "--bind", "0.0.0.0:80"]
+CMD ["gunicorn", "-w", "1", "app:app", "--bind", "0.0.0.0:80"]
