@@ -62,10 +62,9 @@ async function submitFile() {
     const response = await fetch(`${import.meta.env.VITE_ROOT_API}/upload`, {
       method: 'POST',
       body: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Accept': 'image/png',
-      }
+    //   headers: {
+    //     'Accept': 'application/json',
+    //   }
     });
     const data = await response.json();
     console.log(data.message);
