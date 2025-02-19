@@ -60,12 +60,10 @@ async function submitFile() {
   const formData = new FormData();
   formData.append('file', uploadedFile.value);
   try {
-    const response = await axios.post('http://localhost:8000/upload/', formData, {
+    const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-        'Accept': 'image/png', 
-      },
-      responseType: 'arraybuffer',
+        'Content-Type': 'multipart/form-data'
+      }
     });
     console.log(response.data.message);
     toggleResponse(response.data.message);

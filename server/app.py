@@ -1,26 +1,20 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import Response
-from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
+import os
+from flask import Flask, jsonify, flash, request, redirect, url_for, send_from_directory
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from PIL import Image
-import io
 
-from src.pipeline import Pipeline
-from main import load_config
+UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = {"png"}
+app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+CORS(app)
+if not os.path.exists(UPLOAD_FOLDER):
+    print("no upload", flush=True)
 
-app = FastAPI()
 
-# Allow CORS only from frontend running on localhost:5173
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow frontend only from localhost:5173
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-config_path = "./configs/config.yaml"
-# TODO: Fix image paths
-# pipeline = Pipeline(load_config(config_path), "", "")
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def process_image(image: Image.Image) -> Image.Image:
@@ -28,33 +22,31 @@ def process_image(image: Image.Image) -> Image.Image:
     return image.convert("L")
 
 
-@app.get("/")
-async def home():
-    return "The server is running!"
-
-
-@app.post("/upload/")
-async def upload_image(file: UploadFile = File(...)):
-    try:
-        # Read image bytes from the uploaded file
-        image_bytes = await file.read()
-        print(f"File size: {len(image_bytes)} bytes")
-
-        # Convert the bytes to a PIL Image
-        image = Image.open(io.BytesIO(image_bytes))
-        print("Image verified successfully!")
-
-        # Process the image
+@app.route("/upload", methods=["POST"])
+def upload_image():
+    if "file" not in request.files:
+        return jsonify({"message": "No file part"})
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"message": "No file uploaded"})
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        image = Image.open(file.stream)
         processed_image = process_image(image)
-        # processed_image.save("./test.png")
-        
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        processed_image.save(filepath, format="PNG")
+        return jsonify(
+            {"message": "Image uploaded successfully", "file_path": filepath}
+        )
 
-        # Convert processed image back to bytes
-        img_bytes = io.BytesIO()
-        processed_image.save(img_bytes, format="PNG")
-        img_bytes.seek(0)
+    return jsonify({"message": "Invalid file type. Only .png is allowed"})
 
-        return Response(content=img_bytes.read(), media_type="image/png")
 
-    except Exception as e:
-        return Response(status=500)
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
+
+@app.route("/sanitycheck")
+def vue_setup():
+    return jsonify({"message": "Server setup!"})
