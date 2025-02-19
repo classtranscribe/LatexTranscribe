@@ -75,7 +75,7 @@ docker run -i -p 8080:80 -t latextranscribe
         ```
     - Run the server (`uv run` runs `python` in the virtual environment):
         ```sh
-        uv run uvicorn app:app --host 0.0.0.0 --port 8081
+        uv run gunicorn -w 1 'app:app' --bind 0.0.0.0:8081
         ```
     - TESTING – Or run the ML pipeline:
         ```sh
