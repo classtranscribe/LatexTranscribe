@@ -63,15 +63,15 @@ docker run -i -p 8080:80 -t latextranscribe
     - Create a virtual environment and install the dependencies:
         - CPU:
         ```sh
-        uv venv --seed
-        uv sync --extra cpu --no-install-package detectron2 --no-install-package struct-eqtable
-        uv sync --extra cpu
+        uv venv --seed # creates the virtual environment
+        uv sync --extra cpu --no-install-package detectron2 --no-install-package struct-eqtable # installs dependencies other than the two source packages
+        uv sync --extra cpu # installs the two source packages
         ```
         - GPU (CUDA >= 12.4):
         ```sh
-        uv venv --seed
-        uv sync --extra cu124 --no-install-package detectron2 --no-install-package struct-eqtable
-        uv sync --extra cu124
+        uv venv --seed # creates the virtual environment
+        uv sync --extra cu124 --no-install-package detectron2 --no-install-package struct-eqtable # installs dependencies other than the two source packages
+        uv sync --extra cu124 # installs the two source packages
         ```
     - Run the server (`uv run` runs `python` in the virtual environment):
         ```sh
@@ -95,3 +95,7 @@ docker run -i -p 8080:80 -t latextranscribe
         npm run dev
         ```
     - Go to `http://localhost:5173` and you should now see the frontend.
+
+## Others
+- To add a project dependency: [`uv add`](https://docs.astral.sh/uv/reference/cli/#uv-add)
+- To sync the project dependencies again: `uv sync --extra cpu` or `uv sync --extra cu124`
