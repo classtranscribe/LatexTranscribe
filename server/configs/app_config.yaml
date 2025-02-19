@@ -1,5 +1,3 @@
-input_path: null
-output_path: null
 models:
   formula_detection:
     model_name: formula_detection_yolo

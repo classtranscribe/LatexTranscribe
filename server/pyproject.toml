@@ -1,0 +1,82 @@
+[project]
+name = "latextranscribe"
+version = "0.1.0"
+description = "Latex Transcribe"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "detectron2",
+    "fastapi[standard]>=0.115.8",
+    "flask>=3.1.0",
+    "huggingface-hub>=0.28.1",
+    "matplotlib>=3.10.0",
+    "opencv-python-headless>=4.11.0.86",
+    "paddleocr>=2.9.1",
+    "paddlepaddle>=2.6.2",
+    "struct-eqtable",
+    "supervision>=0.24.0",
+    "ultralytics>=8.3.72",
+    "unimernet>=0.2.3",
+]
+
+# CPU install: uv sync --extra cpu
+# GPU install: uv sync --extra cu124
+# https://docs.astral.sh/uv/guides/integration/pytorch/#configuring-accelerators-with-optional-dependencies
+[project.optional-dependencies]
+cpu = ["torch~=2.6.0", "torchvision~=0.21.0"]
+cu124 = ["torch~=2.6.0", "torchvision~=0.21.0"]
+
+[tool.uv]
+conflicts = [[{ extra = "cpu" }, { extra = "cu124" }]]
+no-build-isolation-package = ["detectron2", "struct-eqtable"]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu124", extra = "cu124" },
+]
+torchvision = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu124", extra = "cu124" },
+]
+detectron2 = { git = "https://github.com/facebookresearch/detectron2.git" }
+struct-eqtable = { git = "https://github.com/UniModal4Reasoning/StructEqTable-Deploy.git" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.dependency-metadata]]
+name = "detectron2"
+version = "0.6"
+# https://github.com/facebookresearch/detectron2/blob/9604f5995cc628619f0e4fd913453b4d7d61db3f/setup.py#L162
+requires-dist = [
+    "torch",
+    "Pillow>=7.1",
+    "matplotlib",
+    "pycocotools>=2.0.2",
+    "termcolor>=1.1",
+    "yacs>=0.1.8",
+    "tabulate",
+    "cloudpickle",
+    "tqdm>4.29.0",
+    "tensorboard",
+    "fvcore>=0.1.5,<0.1.6",
+    "iopath>=0.1.7,<0.1.10",
+    "dataclasses; python_version<'3.7'",
+    "omegaconf>=2.1,<2.4",
+    "hydra-core>=1.1",
+    "black",
+    "packaging",
+]
+
+[[tool.uv.dependency-metadata]]
+name = "struct-eqtable"
+version = "0.3.3"
+requires-dist = ["torch", "transformers<=4.47", "accelerate", "einops"]

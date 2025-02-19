@@ -1,5 +1,3 @@
-input_path: /work/hdd/bdsh/dzhao3/data/sample
-output_path: /work/hdd/bdsh/dzhao3/output
 models:
   formula_detection:
     model_name: formula_detection_yolo
