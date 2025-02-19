@@ -60,15 +60,17 @@ async function submitFile() {
   const formData = new FormData();
   formData.append('file', uploadedFile.value);
   try {
-    const response = await axios.post(`${import.meta.env.VITE_ROOT_API}/upload/`, formData, {
+    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/upload/`, {
+      method: 'POST',
+      body: formData,
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Accept': 'image/png', 
-      },
-      responseType: 'arraybuffer',
+        'Accept': 'image/png',
+      }
     });
-    console.log(response.data.message);
-    toggleResponse(response.data.message);
+    const data = await response.json();
+    console.log(data.message);
+    toggleResponse(data.message);
   } catch (error) {
     console.error(error);
     toggleResponse("Couldn't upload image");
