@@ -3,7 +3,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile.cpu
-    image: latextranscribe-server
+    image: latextranscribe
     ports:
       - 8081:80
     command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

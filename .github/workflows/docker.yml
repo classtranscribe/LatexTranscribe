@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FOLDER: ./server
-      IMAGE: latextranscribe-server
+      IMAGE: latextranscribe
       DOCKERFILE: Dockerfile.cpu
     steps:
       - uses: actions/checkout@v4

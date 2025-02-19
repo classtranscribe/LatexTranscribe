@@ -29,13 +29,13 @@ docker run -i -p 8080:80 -t latextranscribe
 - Build and run the backend Docker image:
     - CPU:
     ```sh
-    docker build -t latextranscribe-backend -f server/Dockerfile.cpu ./server/
-    docker run --name latextranscribe-backend --rm -i -p 8081:80 -t latextranscribe-backend
+    docker build -t latextranscribe -f server/Dockerfile.cpu ./server/
+    docker run --name latextranscribe --rm -i -p 8081:80 -t latextranscribe
     ```
     - GPU (CUDA >= 12.4):
     ```sh
-    docker build -t latextranscribe-backend -f server/Dockerfile.gpu ./server/
-    docker run --name latextranscribe-backend --rm --gpus '"device=0"' -i -p 8081:80 -t latextranscribe-backend
+    docker build -t latextranscribe -f server/Dockerfile.gpu ./server/
+    docker run --name latextranscribe --rm --gpus '"device=0"' -i -p 8081:80 -t latextranscribe
     ```
 - Go to `http://localhost:8081` and you should now see `The server is running!`
 ### Frontend
