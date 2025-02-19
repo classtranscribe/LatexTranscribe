@@ -6,6 +6,7 @@ server/models/TabRec/
 
 server/inputs/
 server/outputs/
+server/uploads/*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
