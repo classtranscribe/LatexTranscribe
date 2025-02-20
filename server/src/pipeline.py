@@ -70,8 +70,8 @@ class Pipeline:
         image_obj = ImageObject(image=image, image_name=name)
         image_iter = {name: image_obj}
         self.detect_candidates("layout_detection", images=image_iter)
-        self.detect_candidates("formula_detection")
-        self.transcribe_image()
+        self.detect_candidates("formula_detection", images=image_iter)
+        self.transcribe_image(images=image_iter)
 
 
         return image_obj.get_visualizations(), image_obj.get_results()
