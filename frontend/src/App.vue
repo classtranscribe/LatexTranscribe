@@ -187,6 +187,9 @@ async function submitFile() {
 const formula = computed(() => {
   return latexResults.value.map(element => {
     const f = element.text;
+    if (element.task === "text") {
+        return f;
+    }
     return katex.renderToString(f, { throwOnError: false });
   });
 })
