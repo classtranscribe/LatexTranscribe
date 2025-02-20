@@ -291,7 +291,6 @@ def load_image(image_path: str) -> Tuple[np.array, torch.Tensor]:
 def annotate(
     image_source: np.ndarray,
     boxes: torch.Tensor,
-    logits: torch.Tensor,
     phrases: List[str],
     text_scale: float,
     text_padding=5,
@@ -319,7 +318,7 @@ def annotate(
 
     labels = [f"{phrase}" for phrase in range(boxes.shape[0])]
 
-    from models.OmniParser.util.box_annotator import BoxAnnotator
+    from models.OP.util.box_annotator import BoxAnnotator
 
     box_annotator = BoxAnnotator(
         text_scale=text_scale,
@@ -391,12 +390,16 @@ def get_som_labeled_img(
 ):
     """ocr_bbox: list of xyxy format bbox"""
     w, h = image_source.size
-    xyxy, logits, phrases = predict_yolo(
-        model=model, image=image_source, box_threshold=BOX_TRESHOLD, imgsz=imgsz
-    )
-    xyxy = xyxy / torch.Tensor([w, h, w, h]).to(xyxy.device)
+    if model is not None:
+        xyxy, logits, phrases = predict_yolo(
+            model=model, image=image_source, box_threshold=BOX_TRESHOLD, imgsz=imgsz
+        )
+        xyxy = xyxy / torch.Tensor([w, h, w, h]).to(xyxy.device)
+    else:
+        xyxy = None
+
     image_source = np.asarray(image_source)
-    phrases = [str(i) for i in range(len(phrases))]
+    
 
     # annotate the image with labels
     h, w, _ = image_source.shape
@@ -406,9 +409,13 @@ def get_som_labeled_img(
     else:
         print("no ocr bbox!!!")
         ocr_bbox = None
-    filtered_boxes = remove_overlap(
-        boxes=xyxy, iou_threshold=iou_threshold, ocr_bbox=ocr_bbox
-    )
+    
+    if xyxy is not None:
+        filtered_boxes = remove_overlap(
+            boxes=xyxy, iou_threshold=iou_threshold, ocr_bbox=ocr_bbox
+        )
+    else:
+        filtered_boxes = torch.tensor(ocr_bbox)
 
     # get parsed icon local semantics
     if use_local_semantics:
@@ -444,7 +451,6 @@ def get_som_labeled_img(
         annotated_frame, label_coordinates = annotate(
             image_source=image_source,
             boxes=filtered_boxes,
-            logits=logits,
             phrases=phrases,
             **draw_bbox_config,
         )
@@ -452,7 +458,6 @@ def get_som_labeled_img(
         annotated_frame, label_coordinates = annotate(
             image_source=image_source,
             boxes=filtered_boxes,
-            logits=logits,
             phrases=phrases,
             text_scale=text_scale,
             text_padding=text_padding,
@@ -542,6 +547,9 @@ def check_ocr_box_image(
 ):
     if easyocr_args is None:
         easyocr_args = {}
+
+    if type(image) == Image.Image:
+        image = np.asarray(image)
     result = reader.readtext(image, **easyocr_args)
     coord = [item[0] for item in result]
     text = [item[1] for item in result]

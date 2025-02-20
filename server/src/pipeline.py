@@ -73,9 +73,7 @@ class Pipeline:
                     image.add_visualization(task, out["vis"])
                 image.add_results(task, out["results"], cls, box)
 
-            n = image.get_curr_image(as_numpy=True)
-            print(n, type(n))
-            out = self.models["base_recognition"].predict(n)
+            out = self.models["base_recognition"].predict(image.get_curr_image())
             print(out)
             if out["vis"] is not None:
                 image.add_visualization("base_recognition", out["vis"])
