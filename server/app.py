@@ -3,6 +3,8 @@ from flask import Flask, jsonify, flash, request, redirect, url_for, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image
+import json
+from src.pipeline import Pipeline
 
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"png"}
@@ -16,10 +18,12 @@ if not os.path.exists(UPLOAD_FOLDER):
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+pipeline = Pipeline("./app_config.yaml")
 
 def process_image(image: Image.Image) -> Image.Image:
     """Example image processing function (grayscale conversion)."""
-    return image.convert("L")
+    vis, res = pipeline.predict_image("current", image)
+    return vis, res
 
 
 @app.route("/upload", methods=["POST"])
@@ -33,9 +37,20 @@ def upload_image():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         image = Image.open(file.stream)
-        processed_image = process_image(image)
+        visualizations, transcriptions = process_image(image)
+        for visualization in visualizations[1:]:
+            task, img = visualization
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], f"{task}_{filename}")
+            img.save(filepath, format="PNG")
+
+        with open(os.path.join(app.config["UPLOAD_FOLDER"], 
+                               f"results.json"), "w") as f:
+                json.dump(transcriptions, f)
+
+        processed_image = visualizations[0][1] # layout detection output
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         processed_image.save(filepath, format="PNG")
+        
         return send_file(filepath, mimetype = "image/png")
 
     return jsonify({"message": "Invalid file type. Only .png is allowed"}), 400

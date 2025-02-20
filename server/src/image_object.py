@@ -88,6 +88,9 @@ class ImageObject:
     def add_visualization(self, task, vis):
         self.visualizations.append((task, vis))
 
+    def get_visualizations(self):
+        return self.visualizations
+
     def save_visualizations(self, output_path):
         for i, (task, vis) in enumerate(self.visualizations):
             try:
@@ -124,7 +127,9 @@ class ImageObject:
                         }
                     )
                 )
-
+    def get_results(self):
+        return self.results
+    
     def save_results(self, output_path):
         try:
             with open(
