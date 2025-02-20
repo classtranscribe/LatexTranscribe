@@ -48,7 +48,9 @@ class ImageObject:
     def get_orig_image(self):
         return self.image
 
-    def get_curr_image(self):
+    def get_curr_image(self, as_numpy: bool = False):
+        if as_numpy:
+            return self.image_filtered
         return Image.fromarray(self.image_filtered)
 
     def get_candidates(self):
