@@ -30,14 +30,14 @@ docker run -i -p 8080:80 -t latextranscribe
     - CPU:
     ```sh
     docker build -t latextranscribe -f server/Dockerfile.cpu ./server/
-    docker run --name latextranscribe --rm -i -p 8081:80 -t latextranscribe
+    docker run --name latextranscribe --rm -i -p 8000:8000 -t latextranscribe
     ```
     - GPU (CUDA >= 12.4):
     ```sh
     docker build -t latextranscribe -f server/Dockerfile.gpu ./server/
-    docker run --name latextranscribe --rm --gpus '"device=0"' -i -p 8081:80 -t latextranscribe
+    docker run --name latextranscribe --rm --gpus '"device=0"' -i -p 8000:8000 -t latextranscribe
     ```
-- Go to `http://localhost:8081` and you should now see `The server is running!`
+- Go to `http://localhost:8000` and you should now see `The server is running!`
 ### Frontend
 - Build and run the frontend Docker image:
     ```sh
@@ -75,7 +75,11 @@ docker run -i -p 8080:80 -t latextranscribe
         ```
     - Run the server (`uv run` runs `python` in the virtual environment):
         ```sh
-        uv run gunicorn -w 1 'app:app' --bind 0.0.0.0:8081 --reload --access-logfile '-' --log-level debug
+        uv run uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug
+        ```
+    - In another terminal, run the pipeline worker:
+        ```sh
+        uv run huey_consumer.py src.pipeline_task.huey
         ```
     - TESTING – Or run the ML pipeline:
         ```sh

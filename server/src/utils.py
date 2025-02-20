@@ -1,13 +1,14 @@
 # from ultralytics import YOLO
 import os
 import io
+from pathlib import Path
 import base64
 from PIL import Image
 import cv2
 import numpy as np
 
 # %matplotlib inline
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 # import easyocr
 from paddleocr import PaddleOCR
@@ -23,6 +24,7 @@ import supervision as sv
 import torchvision.transforms as T
 
 # reader = easyocr.Reader(["en"])
+model_dir = Path(__file__).resolve().parent.parent / "models"
 paddle_ocr = PaddleOCR(
     lang="en",  # other lang also available
     use_angle_cls=False,
@@ -32,6 +34,9 @@ paddle_ocr = PaddleOCR(
     use_dilation=True,  # improves accuracy
     det_db_score_mode="slow",  # improves accuracy
     rec_batch_num=1024,
+    det_model_dir=str(model_dir / "PaddleOCR" / "det"),
+    rec_model_dir=str(model_dir / "PaddleOCR" / "rec"),
+    cls_model_dir=str(model_dir / "PaddleOCR" / "cls"),
 )
 
 
@@ -522,7 +527,7 @@ def check_ocr_box(
             cv2.rectangle(opencv_img, (x, y), (x + a, y + b), (0, 255, 0), 2)
 
         # Display the image
-        plt.imshow(opencv_img)
+        # plt.imshow(opencv_img)
     else:
         if output_bb_format == "xywh":
             bb = [get_xywh(item) for item in coord]

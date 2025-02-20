@@ -1,3 +1,4 @@
+from PIL import Image
 from src.image_object import ImageObject
 from src.utils import get_image_paths
 from src.registry import MODEL_REGISTRY
@@ -14,7 +15,9 @@ from src.tasks import (
 
 
 class Pipeline:
-    def __init__(self, config: str, input_path: str, output_path: str):
+    def __init__(
+        self, config: str, input_path: str | None = None, output_path: str | None = None
+    ):
         self.models = {}
         for task in config["models"]:
             ModelClass = MODEL_REGISTRY.get(config["models"][task]["model_name"])
@@ -22,36 +25,41 @@ class Pipeline:
 
         self.images = {}
 
-        image_paths = get_image_paths(input_path)
-        for image_path in image_paths:
-            image_name = image_path.split("/")[-1].split(".")[0]
-            self.images[image_name] = ImageObject(image_path)
+        if input_path is not None:
+            image_paths = get_image_paths(input_path)
+            for image_path in image_paths:
+                image_name = image_path.split("/")[-1].split(".")[0]
+                self.images[image_name] = ImageObject(image_path)
 
         self.output_path = output_path
 
     def add_image(self, name, image: Image.Image):
         self.images[name] = ImageObject(image=image, image_name=name)
 
-    def detect_candidates(self, task, images=None):
+    def detect_candidates(self, task, images: dict[str, ImageObject] | None = None):
         if images is None:
             images = self.images
 
-        for image_name in images:
-            out = self.models[task].predict(images[image_name].get_curr_image())
-            print(out["results"])
-            images[image_name].add_visualization(task, out["vis"])
-            images[image_name].create_candidates(
+        for image_name, image in images.items():
+            print(f"Detecting {task} for {image_name}")
+            out = self.models[task].predict(image.get_curr_image())
+            print(out)
+            print("-" * 50)
+            image.add_visualization(task, out["vis"])
+            image.create_candidates(
                 task,
                 out["results"]["boxes"],
                 out["results"]["classes"],
                 out["results"]["scores"],
             )
 
-    def transcribe_image(self):
-        for image_name in self.images:
+    def transcribe_image(self, images: dict[str, ImageObject] | None = None):
+        if images is None:
+            images = self.images
+        for image_name, image in images.items():
             print(f"Transcribing {image_name}")
-            image = self.images[image_name]
             candidates = image.get_candidates()
+            print(candidates)
             for box, cls, crop in candidates:
                 # should all be one of these two for now
                 if cls in ["formula", "table"]:
@@ -59,18 +67,25 @@ class Pipeline:
                 else:
                     continue
 
+                crop.save(f"{image_name}_{cls}.png")
+
                 out = self.models[task].predict(crop)
+                print(out)
                 if out["vis"] is not None:
                     image.add_visualization(task, out["vis"])
                 image.add_results(task, out["results"], cls, box)
+            print("-" * 50)
 
     # stateless
-    def predict_image(self, name: str, image: Image.Image):
+    def predict_image(self, name: str, image: Image.Image) -> tuple[list, list]:
+        print(
+            f"Predicting using device={get_accelerator(no_mps=False)} (backup=cpu)..."
+        )
         image_obj = ImageObject(image=image, image_name=name)
         image_iter = {name: image_obj}
         self.detect_candidates("layout_detection", images=image_iter)
-        self.detect_candidates("formula_detection")
-        self.transcribe_image()
+        self.detect_candidates("formula_detection", images=image_iter)
+        self.transcribe_image(images=image_iter)
 
         return image_obj.get_visualizations(), image_obj.get_results()
 

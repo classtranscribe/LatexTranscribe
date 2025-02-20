@@ -5,8 +5,8 @@ services:
       dockerfile: Dockerfile.cpu
     image: latextranscribe
     ports:
-      - 8081:80
-    command: ["gunicorn", "-w", "1", "app:app", "--bind", "0.0.0.0:80", "--reload", "--access-logfile", "'-'", "--log-level", "debug"]
+      - 8000:8000
+    command: ["supervisord"] # ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
     develop:
       watch:
         - action: sync

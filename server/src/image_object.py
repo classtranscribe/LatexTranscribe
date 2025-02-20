@@ -26,15 +26,19 @@ def pretty_floats(obj):
 
 
 class ImageObject:
-    def __init__(self, image_path=None, image=None, image_name=None):
+    def __init__(
+        self,
+        image_path: str | None = None,
+        image_name: str | None = None,
+        image: Image.Image | None = None,
+    ):
         if image_path is not None:
             self.image_path = image_path
             self.image_name = image_path.split("/")[-1].split(".")[0]
             self.image = Image.open(image_path).convert("RGB")
         else:
-            self.image = image
             self.image_name = image_name
-
+            self.image = image
         self.image_filtered = cv2.cvtColor(np.array(self.image), cv2.COLOR_RGB2BGR)
         self.image_np = cv2.cvtColor(np.array(self.image), cv2.COLOR_RGB2BGR)
         self.results = []
@@ -127,9 +131,10 @@ class ImageObject:
                         }
                     )
                 )
+
     def get_results(self):
         return self.results
-    
+
     def save_results(self, output_path):
         try:
             with open(
