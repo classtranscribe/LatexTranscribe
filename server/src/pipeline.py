@@ -2,7 +2,8 @@ from src.image_object import ImageObject
 from src.utils import get_image_paths
 from src.registry import MODEL_REGISTRY
 from PIL import Image
-
+import numpy as np
+from typing import Optional, Tuple, List
 # for registry purposes
 from src.tasks import (
     formula_detection,
@@ -28,10 +29,10 @@ class Pipeline:
 
         self.output_path = output_path
 
-    def add_image(self, name, image: Image.Image):
+    def add_image(self, name: str, image: Image.Image):
         self.images[name] = ImageObject(image=image, image_name=name)
 
-    def detect_candidates(self, task, images=None):
+    def detect_candidates(self, task: str, images: Optional[dict] = None):
         if images is None:
             images = self.images
 
@@ -46,7 +47,7 @@ class Pipeline:
                 out["results"]["scores"],
             )
 
-    def transcribe_image(self, images=None):
+    def transcribe_image(self, images: Optional[dict] = None):
         if images is None:
             images = self.images
 
@@ -66,17 +67,17 @@ class Pipeline:
                 image.add_results(task, out["results"], cls, box)
 
     # stateless
-    def predict_image(self, name: str, image: Image.Image):
+    def predict_image(self, name: str, image: Image.Image) -> Tuple[List[Tuple[str, Image.Image | np.array]], List[dict]]:
         image_obj = ImageObject(image=image, image_name=name)
         image_iter = {name: image_obj}
         self.detect_candidates("layout_detection", images=image_iter)
         self.detect_candidates("formula_detection", images=image_iter)
         self.transcribe_image(images=image_iter)
 
-
+        # see comments in functions for output format description
         return image_obj.get_visualizations(), image_obj.get_results()
 
-    def predict(self, save=False):
+    def predict(self, save: bool = False):
         self.detect_candidates("layout_detection")
         self.detect_candidates("formula_detection")
         self.transcribe_image()

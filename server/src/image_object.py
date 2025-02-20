@@ -89,6 +89,7 @@ class ImageObject:
         self.visualizations.append((task, vis))
 
     def get_visualizations(self):
+        # List of tuples (task: str, vis: image)
         return self.visualizations
 
     def save_visualizations(self, output_path):
@@ -128,6 +129,11 @@ class ImageObject:
                     )
                 )
     def get_results(self):
+        # List of dictionaries with properties:
+        ## task: str
+        ## cls: str
+        ## bbox: list of float coords of four corners
+        ## text: transcription
         return self.results
     
     def save_results(self, output_path):
