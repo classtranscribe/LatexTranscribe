@@ -10,7 +10,7 @@ import numpy as np
 # %matplotlib inline
 # from matplotlib import pyplot as plt
 
-# import easyocr
+import easyocr
 from paddleocr import PaddleOCR
 
 import base64
@@ -23,7 +23,7 @@ from torchvision.transforms import ToPILImage
 import supervision as sv
 import torchvision.transforms as T
 
-# reader = easyocr.Reader(["en"])
+reader = easyocr.Reader(["en"])
 model_dir = Path(__file__).resolve().parent.parent / "models"
 paddle_ocr = PaddleOCR(
     lang="en",  # other lang also available

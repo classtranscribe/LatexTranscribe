@@ -17,8 +17,7 @@ class Omniparser(object):
             image,
             output_bb_format="xyxy",
             goal_filtering=None,
-            paddleocr=True,
-            # easyocr_args={"paragraph": False, "text_threshold": 0.9},
+            easyocr_args={"paragraph": False, "text_threshold": 0.9},
         )
         text, ocr_bbox = ocr_bbox_rslt
 

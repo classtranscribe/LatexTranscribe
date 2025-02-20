@@ -67,13 +67,21 @@ class Pipeline:
                 else:
                     continue
 
-                crop.save(f"{image_name}_{cls}.png")
-
                 out = self.models[task].predict(crop)
                 print(out)
                 if out["vis"] is not None:
                     image.add_visualization(task, out["vis"])
                 image.add_results(task, out["results"], cls, box)
+
+            try:
+                out = self.models["base_recognition"].predict(image.get_curr_image())
+                print(out)
+                if out["vis"] is not None:
+                    image.add_visualization("base_recognition", out["vis"])
+                image.add_results("base_recognition", out["results"])
+            except Exception as e:
+                print(e)
+                # pass
             print("-" * 50)
 
     # stateless
