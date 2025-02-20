@@ -83,6 +83,7 @@ RUN apt-get update -qy && apt-get install -qyy \
     libxml2 \
     libgl1 \
     libglib2.0-0 \
+    libgomp1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -95,6 +96,8 @@ COPY --from=build --chown=app:app /app /app
 
 # Copy files needed to run the Python application
 COPY models/ /app/models/
+
+COPY supervisord.conf /app/
 
 COPY configs/ /app/configs/
 COPY src/ /app/src/
