@@ -86,7 +86,7 @@ class Pipeline:
         self.detect_candidates("layout_detection", images=image_iter)
         self.detect_candidates("formula_detection", images=image_iter)
         self.transcribe_image(images=image_iter)
-
+        image_obj.save_visualizations(".")
         return image_obj.get_visualizations(), image_obj.get_results()
 
     def predict(self, save=False):
