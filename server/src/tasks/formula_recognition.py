@@ -8,6 +8,7 @@ from unimernet.common.config import Config
 from unimernet.processors import load_processor
 
 from src.registry import MODEL_REGISTRY
+from src.utils import get_accelerator
 
 
 @MODEL_REGISTRY.register("formula_recognition_unimernet")
@@ -19,7 +20,7 @@ class FormulaRecognitionUniMERNet:
         Args:
             config (dict): Configuration dictionary containing model parameters.
         """
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(get_accelerator(no_mps=True))
         self.model_dir = config["model_path"]
         self.cfg_path = config.get("cfg_path", "pdf_extract_kit/configs/unimernet.yaml")
         self.batch_size = config.get("batch_size", 1)

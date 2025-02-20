@@ -1,11 +1,7 @@
 from src.utils import get_som_labeled_img, check_ocr_box_image, get_yolo_model
-import torch
-from ultralytics import YOLO
 from PIL import Image
-from typing import Dict, Tuple, List
 import io
 import base64
-import json
 from src.registry import MODEL_REGISTRY
 
 
@@ -21,7 +17,8 @@ class Omniparser(object):
             image,
             output_bb_format="xyxy",
             goal_filtering=None,
-            easyocr_args={"paragraph": False, "text_threshold": 0.9},
+            paddleocr=True,
+            # easyocr_args={"paragraph": False, "text_threshold": 0.9},
         )
         text, ocr_bbox = ocr_bbox_rslt
 

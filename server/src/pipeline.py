@@ -1,11 +1,13 @@
 from src.image_object import ImageObject
 from src.utils import get_image_paths
 from src.registry import MODEL_REGISTRY
+from src.utils import get_accelerator
 
 # for registry purposes
 from src.tasks import (
     formula_detection,
     formula_recognition,
+    omniparser,
     layout_detection,
     table_recognition,
 )
@@ -44,6 +46,7 @@ class Pipeline:
 
     def transcribe_image(self):
         for image_name in self.images:
+            print(f"Transcribing {image_name}")
             image = self.images[image_name]
             candidates = image.get_candidates()
             for box, cls, crop in candidates:
@@ -59,6 +62,9 @@ class Pipeline:
                 image.add_results(task, out["results"], cls, box)
 
     def predict(self, save=False):
+        print(
+            f"Predicting using device={get_accelerator(no_mps=False)} (backup=cpu)..."
+        )
         self.detect_candidates("layout_detection")
         self.detect_candidates("formula_detection")
         self.transcribe_image()

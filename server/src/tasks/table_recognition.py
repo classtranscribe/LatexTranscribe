@@ -2,6 +2,7 @@ import torch
 
 from struct_eqtable import build_model
 from src.registry import MODEL_REGISTRY
+from src.utils import get_accelerator
 
 
 @MODEL_REGISTRY.register("table_parsing_struct_eqtable")
@@ -34,7 +35,7 @@ class TableParsingStructEqTable:
             lmdeploy=self.lmdeploy,
             flash_attn=self.flash_attn,
             batch_size=self.batch_size,
-        ).to("cpu")
+        ).to(get_accelerator(no_mps=False))
 
     def predict(self, image):
         results = self.model(image, output_format=self.default_format)
