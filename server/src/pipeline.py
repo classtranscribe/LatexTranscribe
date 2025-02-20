@@ -1,12 +1,13 @@
 from src.image_object import ImageObject
 from src.utils import get_image_paths
 from src.registry import MODEL_REGISTRY
-from PIL import Image
+from src.utils import get_accelerator
 
 # for registry purposes
 from src.tasks import (
     formula_detection,
     formula_recognition,
+    omniparser,
     layout_detection,
     table_recognition,
 )
@@ -46,12 +47,10 @@ class Pipeline:
                 out["results"]["scores"],
             )
 
-    def transcribe_image(self, images=None):
-        if images is None:
-            images = self.images
-
-        for image_name in images:
-            image = images[image_name]
+    def transcribe_image(self):
+        for image_name in self.images:
+            print(f"Transcribing {image_name}")
+            image = self.images[image_name]
             candidates = image.get_candidates()
             for box, cls, crop in candidates:
                 # should all be one of these two for now
@@ -73,10 +72,12 @@ class Pipeline:
         self.detect_candidates("formula_detection")
         self.transcribe_image()
 
-
         return image_obj.get_visualizations(), image_obj.get_results()
 
     def predict(self, save=False):
+        print(
+            f"Predicting using device={get_accelerator(no_mps=False)} (backup=cpu)..."
+        )
         self.detect_candidates("layout_detection")
         self.detect_candidates("formula_detection")
         self.transcribe_image()
