@@ -1,5 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import {samplelatex} from './samplelatex.js'
+import { ref, onMounted, computed} from "vue";
+import 'katex/dist/katex.min.css'
+import katex from 'katex'
 
 const sampleImage = 'src/images/sample.png';
 const sampleImageResult = 'src/images/udlmock1result.png';
@@ -10,12 +13,22 @@ const uploadedFileName = ref('');
 const showResponse = ref('');
 const fileInput = ref(null);
 const dragOver = ref(false);
+const showprocessedimage = ref(false);
+const showlatex = ref(false);
 
-const grayscaleImageUrl = ref('');
+const processedimage = ref('');
 
 
 function toggleResponse(msg) {
   showResponse.value = msg;
+}
+
+function toggleProcessedImages() {
+  showprocessedimage.value = !showprocessedimage.value;
+}
+
+function toggleLatex() {
+  showlatex.value = !showlatex.value;
 }
 
 function selectFile() {
@@ -66,9 +79,16 @@ async function submitFile() {
     //     'Accept': 'application/json',
     //   }
     });
-    const data = await response.json();
-    console.log(data.message);
-    toggleResponse(data.message);
+    if (response.ok) {
+      const imageblob = await response.blob()
+      const imageurl = URL.createObjectURL(imageblob)
+      processedimage.value = imageurl
+      toggleResponse("Success, here is your processed image!")
+    } else {
+      const data = await response.json();
+      console.log(data.message);
+      toggleResponse(data.message);
+    }
   } catch (error) {
     console.error(error);
     toggleResponse("Couldn't upload image");
@@ -84,6 +104,13 @@ async function submitFile() {
 //     toggleResponse('Not setup');
 //   }
 // }
+
+const formula = computed(() => {
+  return samplelatex.map(element => {
+    const f = element.text;
+    return katex.renderToString(f, { throwOnError: false });
+  });
+})
 
 function toggleImages() {
   showDemoImages.value = !showDemoImages.value;
@@ -136,10 +163,37 @@ function deleteFile() {
     </div>
   </div>
 
-  <div v-if="grayscaleImageUrl" class="grayscale-container">
-    <h3>Your Analyzed Image</h3>
-    <img :src="grayscaleImageUrl" alt="Your Image" style="max-width: 400px;" />
+  <div v-if="processedimage" class = 'processed-container'>
+        <button class="button" @click="toggleProcessedImages">Show Your Processed Images</button>
+        <button class="button" @click="toggleLatex">Show Your Processed Math</button>
   </div>
+
+  <div v-if="showprocessedimage" class="processed-container">
+    <div class = 'processed-image'>
+      <h3>Layout</h3>
+      <img :src="processedimage" alt="Your Image" style="max-width: 400px;" />
+    </div>
+    <div class = 'processed-image'>
+      <h3>Formulas</h3>
+      <img :src="processedimage" alt="Your Image" style="max-width: 400px;" />
+    </div>
+  </div>
+
+  <div v-if="showlatex" class="processed-container">
+    <div class = 'processed-image'>
+      <h3>Latex</h3>
+      <ol>
+          <li v-for="(item,ind) in samplelatex">
+              <ul>
+                <li>{{ item.task }}</li>
+                <li>{{ item.bbox[0] }}, {{ item.bbox[1] }}, {{ item.bbox[2] }}, {{ item.bbox[3] }}</li>
+                <li v-html="formula[ind]"></li>
+              </ul>
+          </li>
+      </ol>
+    </div>
+  </div>
+  
   
 </template>
 
@@ -202,4 +256,18 @@ button:hover {
   justify-content: center;
   padding: 25px;
 }
+
+.processed-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 100px;
+}
+
+.processed-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 </style>

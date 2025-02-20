@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, flash, request, redirect, url_for, send_from_directory
+from flask import Flask, jsonify, flash, request, redirect, url_for, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -26,21 +26,19 @@ def process_image(image: Image.Image) -> Image.Image:
 def upload_image():
     print(request.files, flush=True)
     if "file" not in request.files:
-        return jsonify({"message": "No file part"})
+        return jsonify({"message": "No file part"}), 400
     file = request.files["file"]
     if file.filename == "":
-        return jsonify({"message": "No file uploaded"})
+        return jsonify({"message": "No file uploaded"}), 400
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         image = Image.open(file.stream)
         processed_image = process_image(image)
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         processed_image.save(filepath, format="PNG")
-        return jsonify(
-            {"message": "Image uploaded successfully", "file_path": filepath}
-        )
+        return send_file(filepath, mimetype = "image/png")
 
-    return jsonify({"message": "Invalid file type. Only .png is allowed"})
+    return jsonify({"message": "Invalid file type. Only .png is allowed"}), 400
 
 
 @app.route("/")
