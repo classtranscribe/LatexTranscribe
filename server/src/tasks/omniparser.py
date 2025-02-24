@@ -1,11 +1,7 @@
 from src.utils import get_som_labeled_img, check_ocr_box_image, get_yolo_model
-import torch
-from ultralytics import YOLO
 from PIL import Image
-from typing import Dict, Tuple, List
 import io
 import base64
-import json
 from src.registry import MODEL_REGISTRY
 
 
@@ -14,14 +10,14 @@ class Omniparser(object):
     def __init__(self, config):
         self.config = config
 
-        self.som_model = get_yolo_model(model_path=config["model_path"])
+        self.som_model = None # get_yolo_model(model_path=config["model_path"])
 
     def predict(self, image):
         ocr_bbox_rslt, is_goal_filtered = check_ocr_box_image(
             image,
             output_bb_format="xyxy",
             goal_filtering=None,
-            easyocr_args={"paragraph": False, "text_threshold": 0.9},
+            easyocr_args={"paragraph": False, "text_threshold": 0.9}
         )
         text, ocr_bbox = ocr_bbox_rslt
 

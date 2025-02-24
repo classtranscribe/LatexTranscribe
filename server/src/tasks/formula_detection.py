@@ -1,7 +1,7 @@
 import torch
 from ultralytics import YOLO
 from src.registry import MODEL_REGISTRY
-from src.utils import visualize_bbox
+from src.utils import get_accelerator, visualize_bbox
 
 
 @MODEL_REGISTRY.register("formula_detection_yolo")
@@ -25,9 +25,7 @@ class FormulaDetectionYOLO:
         self.conf_thres = config.get("conf_thres", 0.25)
         self.iou_thres = config.get("iou_thres", 0.45)
         self.visualize = config.get("visualize", True)
-        self.device = config.get(
-            "device", "cuda" if torch.cuda.is_available() else "cpu"
-        )
+        self.device = config.get("device", get_accelerator(no_mps=False))
         self.batch_size = config.get("batch_size", 1)
 
     def predict(self, image):
