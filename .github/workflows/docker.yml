@@ -36,7 +36,7 @@ jobs:
       - name: Download model weights using huggingface_hub
         run: |
           cd server
-          HF_HUB_ENABLE_HF_TRANSFER=1 uv run download_models.py
+          HF_HUB_ENABLE_HF_TRANSFER=0 uv run download_models.py
           du -hs models/
       # calculate some variables that are used later
       - name: github branch
