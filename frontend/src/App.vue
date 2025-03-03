@@ -81,7 +81,7 @@ function onDragLeave() {
 
 async function fetchVisualization(taskId) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/api/task/${taskId}/image`);
+    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/task/${taskId}/image`);
     if (!response.ok) {
       console.error('Failed to fetch visualization');
       return;
@@ -121,7 +121,7 @@ async function submitFile() {
   
   try {
     // Upload the file
-    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/api/upload`, {
+    const response = await fetch(`${import.meta.env.VITE_ROOT_API}/upload`, {
       method: 'POST',
       body: formData
     });
@@ -139,7 +139,7 @@ async function submitFile() {
     toggleResponse("Processing your image...");
 
     // Start SSE connection
-    const eventSource = new EventSource(`${import.meta.env.VITE_ROOT_API}/api/task/${task_id}`);
+    const eventSource = new EventSource(`${import.meta.env.VITE_ROOT_API}/task/${task_id}`);
 
     eventSource.onmessage = (event) => {
       console.log('Received event:', event);

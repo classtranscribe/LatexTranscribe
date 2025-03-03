@@ -1,0 +1,9 @@
+# Frontend
+frontend/node_modules
+
+# Backend
+server/.venv
+server/.cache
+server/inputs
+server/outputs
+server/*.db*

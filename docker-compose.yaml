@@ -2,11 +2,11 @@ services:
   backend:
     build:
       context: ./server
-      dockerfile: Dockerfile.cpu
-    image: latextranscribe
+      dockerfile: Dockerfile.dev.cpu
+    image: latextranscribe-backend
     ports:
-      - 8000:8000
-    command: ["supervisord"] # ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+      - 8080:8080
+    command: ["supervisord", "-c", "supervisord.dev.conf"]
     develop:
       watch:
         - action: sync
@@ -14,17 +14,23 @@ services:
           target: /app
           ignore:
             - .venv/
+            - .cache/
+        - action: rebuild
+          path: ./server/pyproject.toml
   frontend:
     build:
       context: ./frontend
-      # https://docs.docker.com/reference/compose-file/build/#target
-      target: dev
+      dockerfile: Dockerfile.dev
     image: latextranscribe-frontend
     ports:
-      - 8080:5173
+      - 8000:8000
     command: ["npm", "run", "dev"]
     develop:
       watch:
         - action: sync
-          path: ./frontend/src
-          target: /app/src
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./frontend/package.json
