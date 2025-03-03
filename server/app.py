@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, status, APIRouter
+from fastapi import FastAPI, File, UploadFile, status
 from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -20,7 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-router = APIRouter(prefix="/api")
 logger = logging.getLogger("uvicorn.error")
 
 tasks = {}
@@ -72,7 +71,7 @@ async def task_update_generator(task_id: uuid.UUID):
     return
 
 
-@router.get(
+@app.get(
     "/task/{task_id}",
     summary="SSE endpoint to get task updates",
     response_description="Streaming task updates",
@@ -81,7 +80,7 @@ async def message_stream(task_id: uuid.UUID):
     return EventSourceResponse(task_update_generator(task_id))
 
 
-@router.get(
+@app.get(
     "/task/{task_id}/image",
     summary="Get the processed image for a task",
     response_description="Processed image",
@@ -98,7 +97,7 @@ async def get_task_image(task_id: uuid.UUID):
     return Response(content=img_bytes.getvalue(), media_type="image/png")
 
 
-@router.post(
+@app.post(
     "/upload",
     summary="Upload an image for processing",
     response_description="Sucess message and corresponding task ID",
@@ -122,6 +121,3 @@ async def upload_image(file: UploadFile = File(...)):
         return JSONResponse(
             content={"message": "Failure"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
-app.include_router(router)

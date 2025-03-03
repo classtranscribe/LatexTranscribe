@@ -22,11 +22,11 @@ env:
   DOCKERHUB_ORG: classtranscribe
 
 jobs:
-  build-server:
-    name: Build server Docker image
+  build-image:
+    name: Build full-stack Docker image
     runs-on: ubuntu-latest
     env:
-      FOLDER: ./server
+      FOLDER: .
       IMAGE: latextranscribe
       DOCKERFILE: Dockerfile.cpu
     steps:
@@ -36,100 +36,8 @@ jobs:
       - name: Download model weights using huggingface_hub
         run: |
           cd server
-          HF_HUB_ENABLE_HF_TRANSFER=1 uv run download_models.py
+          HF_HUB_ENABLE_HF_TRANSFER=0 uv run download_models.py
           du -hs models/
-      # calculate some variables that are used later
-      - name: github branch
-        run: |
-          if [ "${{ github.event.release.target_commitish }}" != "" ]; then
-            BRANCH="${{ github.event.release.target_commitish }}"
-          else
-            BRANCH=${GITHUB_REF##*/}
-          fi
-          echo "GITHUB_BRANCH=${BRANCH}" >> $GITHUB_ENV
-
-          # Commit was for main/release branch, build a new version
-          if [ "$BRANCH" == "master" -o "$BRANCH" == "main" ]; then
-            version="$(cat gui/package.json | jq -r .version)"
-            echo "VERSION=$(version)" >> $GITHUB_ENV
-            tags="latest"
-            oldversion=""
-            while [ "${oldversion}" != "${version}" ]; do
-              oldversion="${version}"
-              tags="${tags},${version}"
-              version=${version%.*}
-            done
-            echo "TAGS=${tags}" >> $GITHUB_ENV
-          else
-            echo "VERSION=$BRANCH" >> $GITHUB_ENV
-            echo "TAGS=$BRANCH" >> $GITHUB_ENV
-          fi
-
-      # build the docker image, this will always run to make sure
-      # the Dockerfile still works.
-      - name: Build Docker image
-        uses: elgohr/Publish-Docker-Github-Action@2.22
-        env:
-          BRANCH: ${{ env.GITHUB_BRANCH }}
-          VERSION: ${{ env.VERSION }}
-          BUILDNUMBER: ${{ github.run_number }}
-          GITSHA1: ${{ github.sha  }}
-        with:
-          registry: docker.pkg.github.com
-          name: ${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ env.IMAGE }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          workdir: ${{ env.FOLDER }}
-          tags: "${{ env.TAGS }}"
-          dockerfile: ${{ env.DOCKERFILE }}
-          buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
-          no_push: true
-
-      # TODO: need publish permissions for ghcr.io
-      # this will publish to github container registry
-      #- name: Publish to GitHub
-      #  if: github.event_name != 'pull_request' && github.repository == env.MAIN_REPO
-      #  uses: elgohr/Publish-Docker-Github-Action@2.22
-      #  env:
-      #    BRANCH: ${{ env.GITHUB_BRANCH }}
-      #    VERSION: ${{ env.VERSION }}
-      #    BUILDNUMBER: ${{ github.run_number }}
-      #    GITSHA1: ${{ github.sha  }}
-      #  with:
-      #    registry: ghcr.io
-      #    name: ${{ github.repository_owner }}/${{ matrix.IMAGE }}
-      #    username: ${{ secrets.GHCR_USERNAME }}
-      #    password: ${{ secrets.GHCR_PASSWORD }}
-      #    context: ${{ matrix.FOLDER }}
-      #    tags: "${{ env.TAGS }}"
-      #    buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
-
-      # this will publish to dockerhub
-      - name: Publish to Docker Hub
-        if: github.event_name != 'pull_request' && github.repository == env.MAIN_REPO
-        uses: elgohr/Publish-Docker-Github-Action@2.22
-        env:
-          BRANCH: ${{ env.GITHUB_BRANCH }}
-          VERSION: ${{ env.VERSION }}
-          BUILDNUMBER: ${{ github.run_number }}
-          GITSHA1: ${{ github.sha  }}
-        with:
-          name: ${{ env.DOCKERHUB_ORG }}/${{ env.IMAGE }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          workdir: ${{ env.FOLDER }}
-          tags: "${{ env.TAGS }}"
-          dockerfile: ${{ env.DOCKERFILE }}
-          buildargs: BRANCH,VERSION,BUILDNUMBER,GITSHA1
-  build-frontend:
-    name: Build frontend Docker image
-    runs-on: ubuntu-latest
-    env:
-      FOLDER: ./frontend
-      IMAGE: latextranscribe-frontend
-      DOCKERFILE: Dockerfile
-    steps:
-      - uses: actions/checkout@v4
       # calculate some variables that are used later
       - name: github branch
         run: |

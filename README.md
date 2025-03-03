@@ -9,7 +9,7 @@
 - Only up-to-date with the main branch.
 ```sh
 docker pull classtranscribe/latextranscribe:latest
-docker run -i -p 8080:80 -t latextranscribe
+docker run -i -p 8000:8000 -t latextranscribe
 ```
 
 ## Downloading the ML models for Pipeline
@@ -29,32 +29,32 @@ docker run -i -p 8080:80 -t latextranscribe
 - Build and run the backend Docker image:
     - CPU:
     ```sh
-    docker build -t latextranscribe -f server/Dockerfile.cpu ./server/
-    docker run --name latextranscribe --rm -i -p 8000:8000 -t latextranscribe
+    docker build -t latextranscribe-backend -f server/Dockerfile.cpu ./server/
+    docker run --name latextranscribe-backend --rm -i -p 8080:8080 -t latextranscribe-backend
     ```
     - GPU (CUDA >= 12.4):
     ```sh
-    docker build -t latextranscribe -f server/Dockerfile.gpu ./server/
-    docker run --name latextranscribe --rm --gpus '"device=0"' -i -p 8000:8000 -t latextranscribe
+    docker build -t latextranscribe-backend -f server/Dockerfile.gpu ./server/
+    docker run --name latextranscribe-backend --rm --gpus '"device=0"' -i -p 8080:8080 -t latextranscribe-backend
     ```
-- Go to `http://localhost:8000` and you should now see `The server is running!`
+- Go to `http://localhost:8080` and you should now see `The server is running!`
 ### Frontend
 - Build and run the frontend Docker image:
     ```sh
     docker build -t latextranscribe-frontend -f frontend/Dockerfile ./frontend/
-    docker run --name latextranscribe-frontend --rm -i -p 8080:80 -t latextranscribe-frontend
+    docker run --name latextranscribe-frontend --rm -i -p 8000:8000 -t latextranscribe-frontend
     ```
-- Go to `http://localhost:8080` and you should now see the frontend.
+- Go to `http://localhost:8000` and you should now see the frontend.
 
 ## Developing Locally
 - There are two options to develop locally.
-    ### Docker Compose Watch
+    ### Docker Compose Watch (Easy)
     - Run in the project root:
         ```sh
         docker compose up --build --watch
         ```
-    - Go to `http://localhost:8080` and you should now see the frontend.
-    ### Local build without Docker
+    - Go to `http://localhost:8000` and you should now see the frontend.
+    ### Local build without Docker (Better performance)
     #### Backend
     - Switch into the `server` directory:
         ```sh
@@ -75,7 +75,7 @@ docker run -i -p 8080:80 -t latextranscribe
         ```
     - Run the server (`uv run` runs `python` in the virtual environment):
         ```sh
-        uv run uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug
+        uv run uvicorn app:app --host 0.0.0.0 --port 8080 --reload --log-level debug
         ```
     - In another terminal, run the pipeline worker:
         ```sh
@@ -98,7 +98,7 @@ docker run -i -p 8080:80 -t latextranscribe
         ```sh
         npm run dev
         ```
-    - Go to `http://localhost:5173` and you should now see the frontend.
+    - Go to `http://localhost:8000` and you should now see the frontend.
 
 ## Others
 - To add a project dependency: [`uv add`](https://docs.astral.sh/uv/reference/cli/#uv-add)
