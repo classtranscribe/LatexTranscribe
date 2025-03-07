@@ -23,6 +23,7 @@ dependencies = [
     "supervisor>=4.2.5",
     "ultralytics>=8.3.72",
     "unimernet>=0.2.3",
+    "requests",
 ]
 
 # CPU install: uv sync --extra cpu

@@ -3,11 +3,17 @@ server/models/Layout/
 server/models/MFD/
 server/models/MFR/
 server/models/TabRec/
+server/models/EasyOCR/
+server/models/Handwritten/
 
 server/inputs/
 server/outputs/
 server/uploads/*.png
 server/*.db*
+
+*.DS_Store
+*.env
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

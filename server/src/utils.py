@@ -23,7 +23,7 @@ from torchvision.transforms import ToPILImage
 import supervision as sv
 import torchvision.transforms as T
 
-reader = easyocr.Reader(["en"])
+reader = easyocr.Reader(["en"], model_storage_directory="models/EasyOCR/")
 model_dir = Path(__file__).resolve().parent.parent / "models"
 paddle_ocr = PaddleOCR(
     lang="en",  # other lang also available
