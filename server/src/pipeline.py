@@ -30,6 +30,7 @@ class Pipeline:
             for image_path in image_paths:
                 image_name = image_path.split("/")[-1].split(".")[0]
                 self.images[image_name] = ImageObject(image_path)
+                print("Loaded", image_name)
 
         self.output_path = output_path
 

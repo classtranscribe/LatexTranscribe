@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument(
         "--output_path",
         type=dir_or_file_path,
-        default="outputs/",
+        default="../../outputs/",
         help="Path to the output directory.",
     )
     return parser.parse_args()
@@ -52,5 +52,6 @@ def load_config(config_path):
 if __name__ == "__main__":
     args = parse_args()
     config = load_config(args.config)
+    print(args.input_path, args.output_path)
     pipeline = Pipeline(config, args.input_path, args.output_path)
     pipeline.predict(save=True)
