@@ -318,7 +318,7 @@ def annotate(
 
     labels = [f"{phrase}" for phrase in range(boxes.shape[0])]
 
-    from models.OP.util.box_annotator import BoxAnnotator
+    from src.util.box_annotator import BoxAnnotator
 
     box_annotator = BoxAnnotator(
         text_scale=text_scale,
