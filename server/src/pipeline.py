@@ -60,18 +60,31 @@ class Pipeline:
             print(f"Transcribing {image_name}")
             candidates = image.get_candidates()
             print(candidates)
-            for box, cls, crop in candidates:
-                # should all be one of these two for now
-                if cls in ["formula", "table"]:
-                    task = f"{cls}_recognition"
-                else:
+            for relevant_cls in ["formula", "table"]:
+                # Filter candidates for the relevant classes
+                to_process = [
+                    (box, cls, crop)
+                    for box, cls, crop in candidates
+                    if cls == relevant_cls
+                ]
+                
+                if not to_process:
+                    # If no candidates for the relevant class, skip to next
+                    print(f"No candidates found for {relevant_cls}. Skipping recognition.")
                     continue
-
-                out = self.models[task].predict(crop)
+                
+                task = f"{relevant_cls}_recognition"
+                out = self.models[task].predict([crop for box, cls, crop in to_process])
                 print(out)
+                # Process each candidate for the relevant class
                 if out["vis"] is not None:
+                    # Add visualization for the task
                     image.add_visualization(task, out["vis"])
-                image.add_results(task, out["results"], cls, box)
+                for i in range(len(out["results"])):
+                    # Add results for each candidate
+                    box, cls, crop = to_process[i]
+                    result = out["results"][i]
+                    image.add_results(task, result, cls, box)
 
             out = self.models["base_recognition"].predict(image.get_curr_image())
             print(out)

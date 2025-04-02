@@ -38,6 +38,13 @@ class TableParsingStructEqTable:
         ).to(get_accelerator(no_mps=False))
 
     def predict(self, image):
-        results = self.model(image, output_format=self.default_format)
+        results = []
+        if type(image) == list:
+            for img in image:
+                # Process each image in the list
+                # Forward pass through the model for each image
+                results.append(self.model(img, output_format=self.default_format)[0])
+        else:
+            results = self.model(image, output_format=self.default_format)
 
         return {"vis": None, "results": results[0]}

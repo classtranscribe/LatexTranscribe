@@ -48,11 +48,20 @@ class FormulaRecognitionUniMERNet:
             logging.error(f"Error loading model and processor: {e}")
             raise
 
-    def predict(self, image):
+    def predict(self, images):
         # Process the image using the visual processor and prepare it for the model
-        image = self.vis_processor(image).unsqueeze(0).to(self.device)
+        processed_images = []
+        if type(images) == list:
+            # Handle the case where a list of images is passed
+            for img in images:
+                processed_images.append(self.vis_processor(img).to(self.device))
+            
+            image = torch.stack(processed_images).to(self.device)
+        else:
+            image = self.vis_processor(image).unsqueeze(0).to(self.device)
+            
         # Generate the prediction using the model
         output = self.model.generate({"image": image})
-        pred = output["pred_str"][0]
+        pred = output["pred_str"]
 
         return {"vis": None, "results": pred}
