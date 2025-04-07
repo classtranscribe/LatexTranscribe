@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed} from 'vue';
+import { ref, onMounted, computed, nextTick} from 'vue';
 import 'katex/dist/katex.min.css'
 import katex from 'katex'
 
@@ -19,6 +19,10 @@ const latexResults = ref([]);
 const showProcessedImage = ref(false);
 const processedImage = ref('');
 const currentTaskId = ref(null);
+const imHeight = ref(0);
+const imWidth = ref(0);
+const scaledHeight = ref(0);
+const scaledWidth = ref(0);
 
 function toggleResponse(msg) {
   showResponse.value = msg;
@@ -89,6 +93,20 @@ async function fetchVisualization(taskId) {
     const blob = await response.blob();
     processedImage.value = URL.createObjectURL(blob);
     showProcessedImage.value = true;
+    const im = new Image();
+    im.src = processedImage.value;
+    im.onload = () => {
+      imHeight.value = img.height;
+      imWidth.value = img.width;
+
+      nextTick(() => {
+        const htmlImage = document.getElementById("processedImageResize");
+        if (htmlImage) {
+          scaledWidth.value = htmlImage.clientWidth;
+          scaledHeight.value = htmlImage.clientHeight;
+        }
+      });
+    };
   } catch (error) {
     console.error('Error fetching visualization:', error);
   }
@@ -205,6 +223,15 @@ function deleteFile() {
     console.log('File deleted and state reset');
   }
 }
+
+async function copyLatex(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Text/Latex copied: "+text);
+  } catch (err) {
+    console.error("Error:", err);
+  }
+}
 </script>
 
 <template>
@@ -254,7 +281,15 @@ function deleteFile() {
   <div v-if="showProcessedImage || showlatex" class="results-container">
     <div v-if="showProcessedImage" class="visualization-container">
       <h3>Layout Detection</h3>
-      <img :src="processedImage" alt="Processed visualization" class="visualization-image" />
+      <div class = "overlay">
+        <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
+        <div v-for="(item, ind) in latexResults" :key="ind" class="overlaybox">
+          <button @click="copyLatex(item.text)" :style="{
+            left:scaledWidth/imWidth*item.bbox[0],
+            top:scaledHeight/imHeight*item.bbox[1]
+          }">copy</button> 
+        </div>
+      </div>
     </div>
 
     <div v-if="showlatex" class="formulas-container">
@@ -264,7 +299,7 @@ function deleteFile() {
           <ul>
             <li>Type: {{ item.task }}</li>
             <li>Position: {{ item.bbox.join(', ') }}</li>
-            <li v-html="formula[ind]"></li>
+            <li v-html="formula[ind]" @click="copyLatex(item.text)"></li>
           </ul>
         </li>
       </ol>
@@ -283,6 +318,17 @@ button {
   font-size: large;
   padding: 10px;
   justify-content: center;
+}
+
+.overlay {
+  position: relative;
+  display: inline;
+}
+
+.overlaybox {
+  position:absolute;
+  bottom:0;
+  right:0;
 }
 
 .demo {
