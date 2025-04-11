@@ -40,6 +40,7 @@ class FormulaDetectionYOLO:
         Returns:
             list: List of prediction results.
         """
+        image = image.get_curr_image()
         result = self.model.predict(
             image,
             imgsz=self.img_size,

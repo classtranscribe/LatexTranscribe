@@ -21,7 +21,7 @@ class Omniparser(object):
         )
         text, ocr_bbox = ocr_bbox_rslt
 
-        if ocr_bbox is None:
+        if ocr_bbox is None or len(ocr_bbox) == 0:
             return {"vis": None, "results": None}
 
         draw_bbox_config = self.config["draw_bbox_config"]

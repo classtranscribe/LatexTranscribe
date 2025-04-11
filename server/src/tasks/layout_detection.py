@@ -42,6 +42,7 @@ class LayoutDetectionLayoutlmv3:
         Returns:
             list: List of prediction results.
         """
+        image = image.get_curr_image()
         layout_res = self.model(np.array(image), ignore_catids=[])
         poly = np.array([det["poly"] for det in layout_res["layout_dets"]])
         boxes = poly[:, [0, 1, 4, 5]]

@@ -408,7 +408,6 @@ def get_som_labeled_img(
         ocr_bbox = ocr_bbox.tolist()
     else:
         print("no ocr bbox!!!")
-        ocr_bbox = None
     
     if xyxy is not None:
         filtered_boxes = remove_overlap(

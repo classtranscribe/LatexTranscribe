@@ -10,6 +10,8 @@ models:
   layout_detection:
     model_name: layout_detection_layoutlmv3
     model_path: models/Layout/LayoutLMv3/model_final.pth
+  handwritten_detection:
+    model_name: handwritten_detection_fast
   formula_recognition:
     model_name: formula_recognition_unimernet
     cfg_path: configs/unimernet.yaml

@@ -11,8 +11,8 @@ from src.tasks import (
     omniparser,
     layout_detection,
     table_recognition,
+    handwritten_detection,
 )
-
 
 class Pipeline:
     def __init__(
@@ -31,6 +31,7 @@ class Pipeline:
                 image_name = image_path.split("/")[-1].split(".")[0]
                 self.images[image_name] = ImageObject(image_path)
 
+
         self.output_path = output_path
 
     def add_image(self, name, image: Image.Image):
@@ -42,10 +43,10 @@ class Pipeline:
 
         for image_name, image in images.items():
             print(f"Detecting {task} for {image_name}")
-            out = self.models[task].predict(image.get_curr_image())
-            print(out)
+            out = self.models[task].predict(image)
             print("-" * 50)
-            image.add_visualization(task, out["vis"])
+            if out["vis"] is not None:
+                image.add_visualization(task, out["vis"])
             image.create_candidates(
                 task,
                 out["results"]["boxes"],
@@ -60,7 +61,7 @@ class Pipeline:
             print(f"Transcribing {image_name}")
             candidates = image.get_candidates()
             print(candidates)
-            for relevant_cls in ["formula", "table"]:
+            for relevant_cls in ["formula", "table", "handwritten"]:
                 # Filter candidates for the relevant classes
                 to_process = [
                     (box, cls, crop)
@@ -72,8 +73,11 @@ class Pipeline:
                     # If no candidates for the relevant class, skip to next
                     print(f"No candidates found for {relevant_cls}. Skipping recognition.")
                     continue
-                
-                task = f"{relevant_cls}_recognition"
+                if relevant_cls == "handwritten":
+                    # For handwritten detection, use a different model
+                    task = "formula_recognition"
+                else:
+                    task = f"{relevant_cls}_recognition"
                 out = self.models[task].predict([crop for box, cls, crop in to_process])
                 print(out)
                 # Process each candidate for the relevant class
@@ -85,9 +89,13 @@ class Pipeline:
                     box, cls, crop = to_process[i]
                     result = out["results"][i]
                     image.add_results(task, result, cls, box)
+            try:
+                out = self.models["base_recognition"].predict(image.get_curr_image())
+                print(out)
+            except:
+                out = {"vis": None, "results": None}
+                print("Exception in base recognition")
 
-            out = self.models["base_recognition"].predict(image.get_curr_image())
-            print(out)
             if out["vis"] is not None:
                 image.add_visualization("base_recognition", out["vis"])
             image.add_results("base_recognition", out["results"])
@@ -100,8 +108,9 @@ class Pipeline:
         )
         image_obj = ImageObject(image=image, image_name=name)
         image_iter = {name: image_obj}
-        self.detect_candidates("layout_detection", images=image_iter)
+        # self.detect_candidates("layout_detection", images=image_iter)
         self.detect_candidates("formula_detection", images=image_iter)
+        self.detect_candidates("handwritten_detection", images=image_iter)
         self.transcribe_image(images=image_iter)
         image_obj.save_visualizations(".")
         return image_obj.get_visualizations(), image_obj.get_results()
@@ -112,6 +121,7 @@ class Pipeline:
         )
         self.detect_candidates("layout_detection")
         self.detect_candidates("formula_detection")
+        self.detect_candidates("handwritten_detection")
         self.transcribe_image()
 
         if save:

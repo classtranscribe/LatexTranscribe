@@ -63,6 +63,9 @@ class ImageObject:
 
         if cls == "formula" and task == "formula_detection":
             return False
+        
+        if cls == "handwritten":
+            return False
 
         return True
 
@@ -112,7 +115,7 @@ class ImageObject:
                     pass
 
     def add_results(self, task, result, cls=None, bbox=None):
-        print(f"Adding results for {self.image_name}")
+        print(f"Adding results for {self.image_name}: {cls}")
         print(result)
         if type(result) == str:
             bbox = [str(round(int(x * 100) / 100.0, 2)) for x in bbox]
