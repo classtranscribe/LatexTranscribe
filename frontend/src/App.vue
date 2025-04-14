@@ -96,8 +96,8 @@ async function fetchVisualization(taskId) {
     const im = new Image();
     im.src = processedImage.value;
     im.onload = () => {
-      imHeight.value = img.height;
-      imWidth.value = img.width;
+      imHeight.value = im.height;
+      imWidth.value = im.width;
 
       nextTick(() => {
         const htmlImage = document.getElementById("processedImageResize");
@@ -228,6 +228,8 @@ async function copyLatex(text) {
   try {
     await navigator.clipboard.writeText(text);
     alert("Text/Latex copied: "+text);
+    console.log("latex copied");
+    console.log(imHeight.value+" "+imWidth.value+" "+scaledHeight.value+" "+imWidth.value);
   } catch (err) {
     console.error("Error:", err);
   }
@@ -283,11 +285,17 @@ async function copyLatex(text) {
       <h3>Layout Detection</h3>
       <div class = "overlay">
         <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
-        <div v-for="(item, ind) in latexResults" :key="ind" class="overlaybox">
-          <button @click="copyLatex(item.text)" :style="{
-            left:scaledWidth/imWidth*item.bbox[0],
-            top:scaledHeight/imHeight*item.bbox[1]
-          }">copy</button> 
+        <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
+          <button
+            @click="copyLatex(item.text)"
+            :style="{
+              position: 'absolute',
+              left: ((item.bbox[0] / imWidth) * 100) + '%',
+              top: ((item.bbox[1] / imHeight) * 100) + '%',
+            }"
+          >
+            copy
+          </button>
         </div>
       </div>
     </div>
@@ -322,14 +330,12 @@ button {
 
 .overlay {
   position: relative;
-  display: inline;
+  display: inline-block;
 }
 
-.overlaybox {
+/* .overlaybox {
   position:absolute;
-  bottom:0;
-  right:0;
-}
+} */
 
 .demo {
   display: flex;

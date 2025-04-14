@@ -115,6 +115,7 @@ async def upload_image(file: UploadFile = File(...)):
             f"Created task (task_id: {task_id}, filename: {file.filename}, size: {len(image_bytes)} bytes)"
         )
         tasks[task_id] = run_pipeline(name=file.filename, image=image)
+        #tasks[task_id] = ""
         return {"message": "Success", "task_id": str(task_id)}
     except Exception as e:
         logger.error(f"Error processing image: {e}")
