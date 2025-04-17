@@ -3,7 +3,7 @@ import yaml
 from huey import SqliteHuey
 
 
-CONFIG_PATH = "./configs/config.yaml"
+CONFIG_PATH = "./configs/config.yml"
 
 huey = SqliteHuey(filename="./tasks.db")
 pipeline = None
