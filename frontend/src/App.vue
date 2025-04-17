@@ -209,7 +209,7 @@ function deleteFile() {
 
 <template>
   <header style="background-color: rgb(70, 122, 253); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
-    <h1>Model Ensemble Tool</h1>
+    <h1>Latex Transcribe</h1>
     <p>To use the tool, please upload an image of the content that you want to be analyzed</p>
     <p>{{ showResponse }}</p>
   </header>
