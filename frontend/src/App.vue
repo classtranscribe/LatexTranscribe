@@ -224,6 +224,10 @@ function deleteFile() {
   }
 }
 
+const uploadedImageURL = computed(() => {
+  return uploadedFile.value ? URL.createObjectURL(uploadedFile.value) : null;
+});
+
 async function copyLatex(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -284,17 +288,22 @@ async function copyLatex(text) {
     <div v-if="showProcessedImage" class="visualization-container">
       <h3>Layout Detection</h3>
       <div class = "overlay">
+        <!-- <img :src="uploadedImageURL" alt="Uploaded image preview" class="visualization-image" id="uploadedImageResize" /> -->
         <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
         <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
           <button
             @click="copyLatex(item.text)"
             :style="{
               position: 'absolute',
-              left: ((item.bbox[0] / imWidth) * 100) + '%',
-              top: ((item.bbox[1] / imHeight) * 100) + '%',
+              left: (((item.bbox[0] / imWidth) * 100)-2) + '%',
+              top: (((item.bbox[1] / imHeight) * 100)-2) + '%',
+              width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100)+4) + '%',
+              height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100)+4) + '%',
+              border: '2px solid rgb(70, 122, 253)',
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
             }"
           >
-            copy
           </button>
         </div>
       </div>
