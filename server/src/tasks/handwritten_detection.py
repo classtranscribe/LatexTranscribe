@@ -6,6 +6,7 @@ import torch.nn as nn
 from typing import Any
 import numpy as np
 from src.image_object import ImageObject
+from src.data_utils.box_merge import MergeBoxes
 
 class DetectionPredictor(nn.Module):
     """Implements an object able to localize text elements in a document
@@ -72,6 +73,8 @@ class HandwrittenDetectionFast:
             pre_processor=PreProcessor((1024, 1024), 1),
             model=fast_base(pretrained=True)
         )
+
+        self.box_merger = MergeBoxes()
     
     def predict(self, image: list[ImageObject] | ImageObject):
         if type(image) != list:
@@ -90,7 +93,9 @@ class HandwrittenDetectionFast:
                 boxes.append(data[:4])
                 scores.append(data[4])
 
+        boxes = self.box_merger.merge_boxes(boxes)
         classes = ["handwritten" for _ in range(len(boxes))]
+        scores = [1.0 for _ in range(len(boxes))] # TODO: add score
         return {
             "vis": None,
             "results": {
@@ -106,6 +111,6 @@ class HandwrittenDetectionFast:
 if __name__ == "__main__":
     from src.image_object import ImageObject
     model = HandwrittenDetectionFast(None)
-    image = ImageObject(image_path = "/Users/deluzhao/Documents/Research/HandwritingSlidesToTest/h4.jpg")
+    image = ImageObject(image_path = "/Users/deluzhao/Documents/Research/inputs/h4.jpg")
     out = model.predict(image)
     print(out)
