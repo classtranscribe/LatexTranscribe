@@ -288,8 +288,8 @@ async function copyLatex(text) {
     <div v-if="showProcessedImage" class="visualization-container">
       <h3>Layout Detection</h3>
       <div class = "overlay">
-        <!-- <img :src="uploadedImageURL" alt="Uploaded image preview" class="visualization-image" id="uploadedImageResize" /> -->
-        <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
+        <img :src="uploadedImageURL" alt="Uploaded image preview" class="visualization-image" id="uploadedImageResize" />
+        <!--  -->
         <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
           <button
             @click="copyLatex(item.text)"
@@ -307,6 +307,7 @@ async function copyLatex(text) {
           </button>
         </div>
       </div>
+      <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
     </div>
 
     <div v-if="showlatex" class="formulas-container">
