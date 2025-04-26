@@ -1,5 +1,6 @@
+
 <script setup>
-import { ref, onMounted, computed} from 'vue';
+import { ref, onMounted, computed, nextTick} from 'vue';
 import 'katex/dist/katex.min.css'
 import katex from 'katex'
 
@@ -19,6 +20,10 @@ const latexResults = ref([]);
 const showProcessedImage = ref(false);
 const processedImage = ref('');
 const currentTaskId = ref(null);
+const imHeight = ref(0);
+const imWidth = ref(0);
+const scaledHeight = ref(0);
+const scaledWidth = ref(0);
 
 function toggleResponse(msg) {
   showResponse.value = msg;
@@ -89,6 +94,20 @@ async function fetchVisualization(taskId) {
     const blob = await response.blob();
     processedImage.value = URL.createObjectURL(blob);
     showProcessedImage.value = true;
+    const im = new Image();
+    im.src = processedImage.value;
+    im.onload = () => {
+      imHeight.value = im.height;
+      imWidth.value = im.width;
+
+      nextTick(() => {
+        const htmlImage = document.getElementById("processedImageResize");
+        if (htmlImage) {
+          scaledWidth.value = htmlImage.clientWidth;
+          scaledHeight.value = htmlImage.clientHeight;
+        }
+      });
+    };
   } catch (error) {
     console.error('Error fetching visualization:', error);
   }
@@ -205,6 +224,21 @@ function deleteFile() {
     console.log('File deleted and state reset');
   }
 }
+
+const uploadedImageURL = computed(() => {
+  return uploadedFile.value ? URL.createObjectURL(uploadedFile.value) : null;
+});
+
+async function copyLatex(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Text/Latex copied: "+text);
+    console.log("latex copied");
+    console.log(imHeight.value+" "+imWidth.value+" "+scaledHeight.value+" "+imWidth.value);
+  } catch (err) {
+    console.error("Error:", err);
+  }
+}
 </script>
 
 <template>
@@ -254,7 +288,27 @@ function deleteFile() {
   <div v-if="showProcessedImage || showlatex" class="results-container">
     <div v-if="showProcessedImage" class="visualization-container">
       <h3>Layout Detection</h3>
-      <img :src="processedImage" alt="Processed visualization" class="visualization-image" />
+      <div class = "overlay">
+        <img :src="uploadedImageURL" alt="Uploaded image preview" class="visualization-image" id="uploadedImageResize" />
+        <!--  -->
+        <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
+          <button
+            @click="copyLatex(item.text)"
+            :style="{
+              position: 'absolute',
+              left: (((item.bbox[0] / imWidth) * 100)-2) + '%',
+              top: (((item.bbox[1] / imHeight) * 100)-2) + '%',
+              width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100)+4) + '%',
+              height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100)+4) + '%',
+              border: '2px solid rgb(70, 122, 253)',
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+            }"
+          >
+          </button>
+        </div>
+      </div>
+      <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
     </div>
 
     <div v-if="showlatex" class="formulas-container">
@@ -264,15 +318,14 @@ function deleteFile() {
           <ul>
             <li>Type: {{ item.task }}</li>
             <li>Position: {{ item.bbox.join(', ') }}</li>
-            <li v-html="formula[ind]"></li>
+            <li v-html="formula[ind]" @click="copyLatex(item.text)"></li>
           </ul>
         </li>
       </ol>
     </div>
   </div>
-  <!--<footer style="background-color: rgb(70, 122, 253); color: white; padding: 100px; margin-top: 20px;">
-
-  </footer>-->
+    <!--<footer style="background-color: rgb(70, 122, 253); color: white; padding: 100px; margin-top: 20px;">
+    </footer>-->
 </template>
 
 <style scoped>
@@ -287,6 +340,15 @@ button {
   padding: 10px;
   justify-content: center;
 }
+
+.overlay {
+  position: relative;
+  display: inline-block;
+}
+
+/* .overlaybox {
+  position:absolute;
+} */
 
 .demo {
   display: flex;
@@ -392,3 +454,4 @@ button:disabled:hover {
   margin-bottom: 1rem;
 }
 </style>
+
