@@ -270,6 +270,9 @@ function deleteFile() {
       </ol>
     </div>
   </div>
+  <!--<footer style="background-color: rgb(70, 122, 253); color: white; padding: 100px; margin-top: 20px;">
+
+  </footer>-->
 </template>
 
 <style scoped>
@@ -290,6 +293,7 @@ button {
   justify-content: center;
   align-items: center;
   padding-top: 60px;
+  padding-bottom: 10px;
 }
 
 .upload-container {
