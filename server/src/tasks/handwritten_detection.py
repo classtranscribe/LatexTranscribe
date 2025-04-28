@@ -7,6 +7,8 @@ from typing import Any
 import numpy as np
 from src.image_object import ImageObject
 from src.data_utils.box_merge import MergeBoxes
+import os
+from PIL import Image, ImageDraw 
 
 class DetectionPredictor(nn.Module):
     """Implements an object able to localize text elements in a document
@@ -76,6 +78,29 @@ class HandwrittenDetectionFast:
 
         self.box_merger = MergeBoxes()
     
+    def draw_bounding_boxes(self, image_obj, detection_result, output_folder="images", save_result = False):
+        #coordinates = detection_result["results"]["boxes"]
+        im = image_obj.get_curr_image(as_numpy=False)  # Get the image as a NumPy array
+        
+        #im_pil = Image.fromarray(im) 
+
+        draw = ImageDraw.Draw(im)
+
+        for box in detection_result:
+            x1, y1, x2, y2 = map(float, box)
+            draw.rectangle([x1, y1, x2, y2], outline="red", width=2)
+
+        if save_result:
+            output_path = os.path.join(output_folder, f"{image_obj.image_name}_with_boxes_test.jpg")
+
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+
+            im.save(output_path)
+            print(f"Image saved at {output_path}")
+
+        return im
+
     def predict(self, image: list[ImageObject] | ImageObject):
         if type(image) != list:
             image = [image]
@@ -96,8 +121,12 @@ class HandwrittenDetectionFast:
         boxes = self.box_merger.merge_boxes(boxes)
         classes = ["handwritten" for _ in range(len(boxes))]
         scores = [1.0 for _ in range(len(boxes))] # TODO: add score
+
+        image_result = self.draw_bounding_boxes(image[0], boxes)
+
+
         return {
-            "vis": None,
+            "vis": image_result,
             "results": {
                 "boxes": boxes,
                 "scores": scores,
@@ -106,11 +135,10 @@ class HandwrittenDetectionFast:
         }
 
 
-
     
 if __name__ == "__main__":
     from src.image_object import ImageObject
     model = HandwrittenDetectionFast(None)
-    image = ImageObject(image_path = "/Users/deluzhao/Documents/Research/inputs/h4.jpg")
+    image = ImageObject(image_path = "/home/nikisun/LatexTranscribe/server/images/h4.jpg")
     out = model.predict(image)
     print(out)
