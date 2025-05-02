@@ -38,6 +38,10 @@ class Pipeline:
         self.images[name] = ImageObject(image=image, image_name=name)
 
     def detect_candidates(self, task, images: dict[str, ImageObject] | None = None):
+        if task not in self.models:
+            print("Model for task '{}' not found.".format(task))
+            return
+        
         if images is None:
             images = self.images
 

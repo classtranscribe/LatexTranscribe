@@ -26,12 +26,13 @@ class MergeBoxes:
         if not boxes:
             return []
 
-        boxes.sort(key=lambda b: (b[1] + b[3]) / 2)
-
+        # boxes.sort(key=lambda b: (b[1] + b[3]) / 2)
+        boxes.sort(key=lambda b: b[1])
         merged_result = []
 
         current_line = [boxes[0]]
         avg_height = boxes[0][3] - boxes[0][1]
+        max_height = avg_height
 
         def merge_into_line(line_boxes, new_box): # merge new candidate box with the last merged one
             """Try to merge the new box with the last merged one in the line."""
@@ -49,17 +50,21 @@ class MergeBoxes:
 
         for box in boxes[1:]:
             box_center = (box[1] + box[3]) / 2
-            current_line_center = sum((b[1] + b[3]) / 2 for b in current_line) / len(current_line)
-            tolerance = avg_height * vertical_tolerance_multiplier
+            # current_line_center = sum((b[1] + b[3]) / 2 for b in current_line) / len(current_line)
+            current_line_center = (min(b[1] for b in current_line) + max(b[3] for b in current_line)) / 2
+            # tolerance = avg_height * vertical_tolerance_multiplier
+            tolerance = max_height * vertical_tolerance_multiplier
 
             if abs(box_center - current_line_center) <= tolerance:
                 merge_into_line(current_line, box)
                 avg_height = sum(b[3] - b[1] for b in current_line) / len(current_line)
+                max_height = max(b[3] - b[1] for b in current_line)
             else:
                 # finalize current merged line
                 merged_result.extend(current_line)
                 current_line = [box]
                 avg_height = box[3] - box[1]
+                max_height = avg_height
 
         # add last group
         if current_line:
