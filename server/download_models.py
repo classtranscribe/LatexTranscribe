@@ -11,7 +11,7 @@ snapshot_download(
     repo_id="opendatalab/pdf-extract-kit-1.0",
     local_dir="./",
     allow_patterns=[
-        "models/Layout/*",
+        "models/Layout/YOLO/*",
         "models/MFD/*",
         "models/MFR/unimernet_base/*",
         "models/TabRec/*",

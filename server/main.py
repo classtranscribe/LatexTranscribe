@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument(
         "--config",
         type=str,
-        default="./configs/config.yaml",
+        default="./configs/config.yml",
         help="Path to the main configuration file.",
     )
     parser.add_argument(
