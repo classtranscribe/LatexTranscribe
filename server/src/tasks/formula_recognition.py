@@ -22,7 +22,7 @@ class FormulaRecognitionUniMERNet:
         """
         self.device = torch.device(get_accelerator(no_mps=True))
         self.model_dir = config["model_path"]
-        self.cfg_path = config.get("cfg_path", "pdf_extract_kit/configs/unimernet.yaml")
+        self.cfg_path = config.get("cfg_path", "configs/unimernet.yml")
         self.batch_size = config.get("batch_size", 1)
 
         # Load the UniMERNet model

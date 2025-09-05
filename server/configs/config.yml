@@ -8,11 +8,16 @@ models:
     batch_size: 1
     visualize: True
   layout_detection:
-    model_name: layout_detection_layoutlmv3
-    model_path: models/Layout/LayoutLMv3/model_final.pth
+    model_name: layout_detection_yolo
+    model_path: models/Layout/YOLO/doclayout_yolo_ft.pt
+    img_size: 1024
+    conf_thres: 0.25
+    iou_thres: 0.45
+    visualize: True
+    device: mps
   formula_recognition:
     model_name: formula_recognition_unimernet
-    cfg_path: configs/unimernet.yaml
+    cfg_path: configs/unimernet.yml
     model_path: models/MFR/unimernet_base
     visualize: True
   table_recognition:

@@ -64,13 +64,13 @@ docker run -i -p 8000:8000 -t latextranscribe
         - CPU:
         ```sh
         uv venv --seed # creates the virtual environment
-        uv sync --extra cpu --no-install-package detectron2 --no-install-package struct-eqtable # installs dependencies other than the two source packages
+        uv sync --extra cpu --no-install-package struct-eqtable # installs dependencies other than the two source packages
         uv sync --extra cpu # installs the two source packages
         ```
         - GPU (CUDA >= 12.4):
         ```sh
         uv venv --seed # creates the virtual environment
-        uv sync --extra cu124 --no-install-package detectron2 --no-install-package struct-eqtable # installs dependencies other than the two source packages
+        uv sync --extra cu124 --no-install-package struct-eqtable # installs dependencies other than the two source packages
         uv sync --extra cu124 # installs the two source packages
         ```
     - Run the server (`uv run` runs `python` in the virtual environment):
