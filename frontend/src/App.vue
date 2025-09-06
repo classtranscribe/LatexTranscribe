@@ -172,6 +172,7 @@ async function submitFile() {
         bbox: result.bbox,
         text: result.text
       }));
+      console.log("results: ", latexResults.value);
       toggleResponse("Processing complete!");
       showlatex.value = true;
       
@@ -289,25 +290,20 @@ async function copyLatex(text) {
     <div v-if="showProcessedImage" class="visualization-container">
       <h3>Layout Detection</h3>
       <div class = "overlay">
-        <!-- <img :src="uploadedImageURL" alt="Uploaded image preview" class="visualization-image" id="uploadedImageResize" />-->
         <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
-        <!--  -->
-        <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
-          <button
-            @click="copyLatex(item.text)"
-            :style="{
-              position: 'absolute',
-              left: (((item.bbox[0] / imWidth) * 100)-2) + '%',
-              top: (((item.bbox[1] / imHeight) * 100)-2) + 33.33 + '%',
-              width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100)+4) + '%',
-              height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100)+4) + '%',
-              border: '0px solid rgb(70, 122, 253)',
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-            }"
-          >
-          </button>
-        </div>
+          <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
+            <button
+              @click="copyLatex(item.text)"
+              class="latex-btn"
+              :style="{
+                left:(((item.bbox[0] / imWidth) * 100) - 2) + '%',
+                top: (((item.bbox[1] / imHeight) * 100) - 2 + 33.33) + '%',
+                width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100) + 4) + '%',
+                height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100) + 4) + '%',
+              }"
+            >
+            </button>
+          </div>
       </div>
     </div>
 
@@ -331,6 +327,19 @@ async function copyLatex(text) {
 <style scoped>
 * {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.latex-btn {
+  position: absolute;
+  border: 0px solid rgb(70, 122, 253);
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+.latex-btn:hover {
+  border: 2px solid rgb(70, 122, 253);
+  background-color: rgba(70, 122, 253, 0.2);
 }
 
 button {
