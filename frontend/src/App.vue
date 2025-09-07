@@ -244,7 +244,7 @@ async function copyLatex(text) {
 
 <template>
   <div class="page">
-    <header style="background-color: rgb(70, 122, 253); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
+    <header style="background-color: rgb(67, 131, 134); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
       <h1>Latex Transcribe</h1>
       <p>To use the tool, please upload an image of the content that you want to be analyzed</p>
       <p>{{ showResponse }}</p>
@@ -255,11 +255,11 @@ async function copyLatex(text) {
       <div v-if="showDemoImages">
         <div class="demoimages">
           <div class="demoimage">
-            <div style="color: rgb(70, 122, 253);">Your Content</div>
+            <div style="color: rgb(67, 131, 134);">Your Content</div>
             <img :src="sampleImage" style="max-width: 400px;" />
           </div>
           <div class="demoimage">
-            <div style="color: rgb(70, 122, 253);">Your Result</div>
+            <div style="color: rgb(67, 131, 134);">Your Result</div>
             <img :src="sampleImageResult" style="max-width: 400px;" />
           </div>
         </div>
@@ -309,7 +309,7 @@ async function copyLatex(text) {
       </div>
 
       <div v-if="showlatex" class="formulas-container">
-        <h3>Detected Formulas</h3>
+        <h3 style="text-align: center;" >Detected Formulas</h3>
         <ol>
           <li v-for="(item, ind) in latexResults" :key="ind">
             <ul>
@@ -339,20 +339,20 @@ async function copyLatex(text) {
 
 .latex-btn {
   position: absolute;
-  border: 0px solid rgb(70, 122, 253);
+  border: 0px solid rgb(67, 131, 134);
   background-color: transparent;
   cursor: pointer;
   transition: background-color 0.2s ease, border 0.2s ease;
 }
 
 .latex-btn:hover {
-  border: 2px solid rgb(70, 122, 253);
+  border: 2px solid rgb(67, 131, 134);
   background-color: rgba(70, 122, 253, 0.2);
 }
 
 button {
   background-color: white;
-  color: rgb(70, 122, 253);
+  color: rgb(67, 131, 134);
   font-size: large;
   padding: 10px;
   justify-content: center;
@@ -363,12 +363,9 @@ button {
   display: inline-block;
 }
 
-/* .overlaybox {
-  position:absolute;
-} */
-
 .demo {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding-top: 60px;
@@ -388,18 +385,18 @@ button {
   justify-content: center;
   align-items: center;
   padding-top: 100px;
-  border: 2px dashed rgb(70, 122, 253);
+  border: 2px dashed rgb(67, 131, 134);
   padding: 20px;
   text-align: center;
   cursor: pointer;
-  background-color: rgb(146, 177, 255);
+  background-color: rgb(148, 205, 208);
   color: white;
   width: 300px;
   margin: auto;
 }
 
 .upload.drag-over {
-  background-color: rgba(70, 122, 253, 0.8);
+  background-color: rgba(67, 131, 134, 0.8);
 }
 
 .upload.processing {
@@ -408,7 +405,7 @@ button {
 }
 
 button:hover {
-  background-color: rgb(70, 122, 253);
+  background-color: rgb(67, 131, 134);
   color: white;
 }
 
@@ -432,7 +429,8 @@ button:disabled:hover {
 
 .results-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
   gap: 2rem;
   padding: 2rem;
@@ -442,6 +440,7 @@ button:disabled:hover {
   text-align: center;
   max-width: 800px;
   width: 100%;
+  margin-top: 90px;
 }
 
 .visualization-image {
@@ -472,7 +471,8 @@ button:disabled:hover {
 }
 
 .footer {
-  background-color: rgb(70, 122, 253);
+  background-color: rgb(67, 131, 134);
+  margin-top: 20px;
   color: white;
   padding: 20px;
   height: 100px;
