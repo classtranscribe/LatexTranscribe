@@ -243,90 +243,98 @@ async function copyLatex(text) {
 </script>
 
 <template>
-  <header style="background-color: rgb(70, 122, 253); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
-    <h1>Latex Transcribe</h1>
-    <p>To use the tool, please upload an image of the content that you want to be analyzed</p>
-    <p>{{ showResponse }}</p>
-  </header>
+  <div class="page">
+    <header style="background-color: rgb(70, 122, 253); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
+      <h1>Latex Transcribe</h1>
+      <p>To use the tool, please upload an image of the content that you want to be analyzed</p>
+      <p>{{ showResponse }}</p>
+    </header>
 
-  <div class="demo">
-    <button @click="toggleImages">{{ showDemoImages ? 'Close Demo' : 'Open Demo' }}</button>
-    <div v-if="showDemoImages">
-      <div class="demoimages">
-        <div class="demoimage">
-          <div style="color: rgb(70, 122, 253);">Your Content</div>
-          <img :src="sampleImage" style="max-width: 400px;" />
-        </div>
-        <div class="demoimage">
-          <div style="color: rgb(70, 122, 253);">Your Result</div>
-          <img :src="sampleImageResult" style="max-width: 400px;" />
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="uploadcontainer">
-    <div class="upload" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop" 
-         :class="{ 'drag-over': dragOver, 'processing': isProcessing }">
-      <input type="file" ref="fileInput" accept="image/png" @change="onFileChange" 
-             style="display: none;" :disabled="isProcessing" />
-      <button class="button" @click="selectFile" :disabled="isProcessing">
-        Upload Image
-      </button>
-      <p>Or drag and drop an image here</p>
-      <div v-if="uploadedFile">
-        <button class="button" @click="submitFile" :disabled="isProcessing">
-          {{ isProcessing ? 'Processing...' : 'Submit Image' }}
-        </button>
-        <button class="button" @click="deleteFile" :disabled="isProcessing">
-          Delete Image
-        </button>
-        <p>You've uploaded file: {{ uploadedFileName }}</p>
-      </div>
-    </div>
-  </div>
-
-  <div v-if="showProcessedImage || showlatex" class="results-container">
-    <div v-if="showProcessedImage" class="visualization-container">
-      <h3>Layout Detection</h3>
-      <div class = "overlay">
-        <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
-          <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
-            <button
-              @click="copyLatex(item.text)"
-              class="latex-btn"
-              :style="{
-                left:(((item.bbox[0] / imWidth) * 100) - 2) + '%',
-                top: (((item.bbox[1] / imHeight) * 100) - 2 + 33.33) + '%',
-                width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100) + 4) + '%',
-                height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100) + 4) + '%',
-              }"
-            >
-            </button>
+    <div class="demo">
+      <button @click="toggleImages">{{ showDemoImages ? 'Close Demo' : 'Open Demo' }}</button>
+      <div v-if="showDemoImages">
+        <div class="demoimages">
+          <div class="demoimage">
+            <div style="color: rgb(70, 122, 253);">Your Content</div>
+            <img :src="sampleImage" style="max-width: 400px;" />
           </div>
+          <div class="demoimage">
+            <div style="color: rgb(70, 122, 253);">Your Result</div>
+            <img :src="sampleImageResult" style="max-width: 400px;" />
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="uploadcontainer">
+      <div class="upload" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop" 
+          :class="{ 'drag-over': dragOver, 'processing': isProcessing }">
+        <input type="file" ref="fileInput" accept="image/png" @change="onFileChange" 
+              style="display: none;" :disabled="isProcessing" />
+        <button class="button" @click="selectFile" :disabled="isProcessing">
+          Upload Image
+        </button>
+        <p>Or drag and drop an image here</p>
+        <div v-if="uploadedFile">
+          <button class="button" @click="submitFile" :disabled="isProcessing">
+            {{ isProcessing ? 'Processing...' : 'Submit Image' }}
+          </button>
+          <button class="button" @click="deleteFile" :disabled="isProcessing">
+            Delete Image
+          </button>
+          <p>You've uploaded file: {{ uploadedFileName }}</p>
+        </div>
       </div>
     </div>
 
-    <div v-if="showlatex" class="formulas-container">
-      <h3>Detected Formulas</h3>
-      <ol>
-        <li v-for="(item, ind) in latexResults" :key="ind">
-          <ul>
-            <li>Type: {{ item.task }}</li>
-            <li>Position: {{ item.bbox.join(', ') }}</li>
-            <li v-html="formula[ind]" @click="copyLatex(item.text)"></li>
-          </ul>
-        </li>
-      </ol>
+    <div v-if="showProcessedImage || showlatex" class="results-container">
+      <div v-if="showProcessedImage" class="visualization-container">
+        <h3>Layout Detection</h3>
+        <div class = "overlay">
+          <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
+            <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
+              <button
+                @click="copyLatex(item.text)"
+                class="latex-btn"
+                :style="{
+                  left:(((item.bbox[0] / imWidth) * 100) - 2) + '%',
+                  top: (((item.bbox[1] / imHeight) * 100) - 2 + 33.33) + '%',
+                  width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100) + 4) + '%',
+                  height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100) + 4) + '%',
+                }"
+              >
+              </button>
+            </div>
+        </div>
+      </div>
+
+      <div v-if="showlatex" class="formulas-container">
+        <h3>Detected Formulas</h3>
+        <ol>
+          <li v-for="(item, ind) in latexResults" :key="ind">
+            <ul>
+              <li>Type: {{ item.task }}</li>
+              <li>Position: {{ item.bbox.join(', ') }}</li>
+              <li v-html="formula[ind]" @click="copyLatex(item.text)"></li>
+            </ul>
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
-    <!--<footer style="background-color: rgb(70, 122, 253); color: white; padding: 100px; margin-top: 20px;">
-    </footer>-->
+  <footer class="footer">
+  </footer>
 </template>
 
 <style scoped>
 * {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .latex-btn {
@@ -461,6 +469,13 @@ button:disabled:hover {
 
 .formulas-container li {
   margin-bottom: 1rem;
+}
+
+.footer {
+  background-color: rgb(70, 122, 253);
+  color: white;
+  padding: 20px;
+  height: 100px;
 }
 </style>
 
