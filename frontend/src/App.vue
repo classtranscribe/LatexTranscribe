@@ -16,6 +16,7 @@ const dragOver = ref(false);
 
 const showlatex = ref(false);
 const latexResults = ref([]);
+const sortedLatexResults = ref([]);
 
 const showProcessedImage = ref(false);
 const processedImage = ref('');
@@ -172,7 +173,7 @@ async function submitFile() {
         bbox: result.bbox,
         text: result.text
       }));
-      console.log("results: ", latexResults.value);
+      latexResults.value.sort((a, b) => a.bbox[1] - b.bbox[1]);
       toggleResponse("Processing complete!");
       showlatex.value = true;
       
@@ -276,7 +277,7 @@ async function copyLatex(text) {
         </button>
         <p>Or drag and drop an image here</p>
         <div v-if="uploadedFile">
-          <button class="button" @click="submitFile" :disabled="isProcessing">
+          <button style="margin-right: 10px;" class="button" @click="submitFile" :disabled="isProcessing">
             {{ isProcessing ? 'Processing...' : 'Submit Image' }}
           </button>
           <button class="button" @click="deleteFile" :disabled="isProcessing">
@@ -297,10 +298,14 @@ async function copyLatex(text) {
                 @click="copyLatex(item.text)"
                 class="latex-btn"
                 :style="{
-                  left:(((item.bbox[0] / imWidth) * 100) - 2) + '%',
-                  top: (((item.bbox[1] / imHeight) * 100) - 2 + 33.33) + '%',
-                  width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100) + 4) + '%',
-                  height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100) + 4) + '%',
+                  left: ((item.bbox[0] / imWidth) * 100) + '%',
+                  top: ((item.bbox[1] / imHeight) * 100) + '%',
+                  width: ((item.bbox[2] - item.bbox[0]) / imWidth * 100) + '%',
+                  height: ((item.bbox[3] - item.bbox[1]) / imHeight * 100) + '%',
+                  // left:(((item.bbox[0] / imWidth) * 100) - 2) + '%',
+                  // top: (((item.bbox[1] / imHeight) * 100) - 2 + 33.33) + '%',
+                  // width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100) + 4) + '%',
+                  // height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100) + 4) + '%',
                 }"
               >
               </button>
@@ -347,7 +352,7 @@ async function copyLatex(text) {
 
 .latex-btn:hover {
   border: 2px solid rgb(67, 131, 134);
-  background-color: rgba(70, 122, 253, 0.2);
+  background-color: rgba(38, 48, 49, 0.4);
 }
 
 button {
@@ -356,6 +361,7 @@ button {
   font-size: large;
   padding: 10px;
   justify-content: center;
+  border-radius: 5px;
 }
 
 .overlay {
