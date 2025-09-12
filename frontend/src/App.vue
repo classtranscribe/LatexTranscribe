@@ -437,7 +437,6 @@ button:disabled:hover {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
   gap: 2rem;
   padding: 2rem;
 }
@@ -446,7 +445,6 @@ button:disabled:hover {
   text-align: center;
   max-width: 800px;
   width: 100%;
-  margin-top: 90px;
 }
 
 .visualization-image {
