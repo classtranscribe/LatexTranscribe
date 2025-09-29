@@ -333,7 +333,8 @@ async function copyLatex(text) {
 
 <style scoped>
 * {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+  font-family: -apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
 }
 
 .page {
@@ -362,6 +363,12 @@ button {
   padding: 10px;
   justify-content: center;
   border-radius: 5px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+  border-color: rgba(196, 196, 196, 1);
+}
+
+button:hover {
+  background-color: rgb(245, 245, 245);
 }
 
 .overlay {
@@ -392,6 +399,7 @@ button {
   align-items: center;
   padding-top: 100px;
   border: 2px dashed rgb(67, 131, 134);
+  border-radius: 5px;
   padding: 20px;
   text-align: center;
   cursor: pointer;
