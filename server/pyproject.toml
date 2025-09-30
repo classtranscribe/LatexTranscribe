@@ -12,15 +12,14 @@ dependencies = [
     "huey>=2.5.2",
     "huggingface-hub>=0.28.1",
     "matplotlib>=3.10.0",
+    "mineru[core]>=2.5.4",
     "opencv-python-headless>=4.11.0.86",
     "paddleocr>=2.9.1",
     "paddlepaddle>=2.6.2",
     "sse-starlette>=2.2.1",
-    "struct-eqtable",
     "supervision>=0.24.0",
     "supervisor>=4.2.5",
     "ultralytics>=8.3.72",
-    "unimernet>=0.2.3",
 ]
 
 # CPU install: uv sync --extra cpu
@@ -32,7 +31,6 @@ cu124 = ["torch~=2.6.0", "torchvision~=0.21.0"]
 
 [tool.uv]
 conflicts = [[{ extra = "cpu" }, { extra = "cu124" }]]
-no-build-isolation-package = ["struct-eqtable"]
 
 [tool.uv.sources]
 torch = [
@@ -43,7 +41,6 @@ torchvision = [
     { index = "pytorch-cpu", extra = "cpu" },
     { index = "pytorch-cu124", extra = "cu124" },
 ]
-struct-eqtable = { git = "https://github.com/UniModal4Reasoning/StructEqTable-Deploy.git" }
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
@@ -55,7 +52,4 @@ name = "pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
 explicit = true
 
-[[tool.uv.dependency-metadata]]
-name = "struct-eqtable"
-version = "0.3.3"
-requires-dist = ["torch", "transformers<=4.47", "accelerate", "einops"]
+
