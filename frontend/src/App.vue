@@ -1,5 +1,6 @@
+
 <script setup>
-import { ref, onMounted, computed} from 'vue';
+import { ref, onMounted, computed, nextTick} from 'vue';
 import 'katex/dist/katex.min.css'
 import katex from 'katex'
 
@@ -15,10 +16,15 @@ const dragOver = ref(false);
 
 const showlatex = ref(false);
 const latexResults = ref([]);
+const sortedLatexResults = ref([]);
 
 const showProcessedImage = ref(false);
 const processedImage = ref('');
 const currentTaskId = ref(null);
+const imHeight = ref(0);
+const imWidth = ref(0);
+const scaledHeight = ref(0);
+const scaledWidth = ref(0);
 
 function toggleResponse(msg) {
   showResponse.value = msg;
@@ -89,6 +95,20 @@ async function fetchVisualization(taskId) {
     const blob = await response.blob();
     processedImage.value = URL.createObjectURL(blob);
     showProcessedImage.value = true;
+    const im = new Image();
+    im.src = processedImage.value;
+    im.onload = () => {
+      imHeight.value = im.height;
+      imWidth.value = im.width;
+
+      nextTick(() => {
+        const htmlImage = document.getElementById("processedImageResize");
+        if (htmlImage) {
+          scaledWidth.value = htmlImage.clientWidth;
+          scaledHeight.value = htmlImage.clientHeight;
+        }
+      });
+    };
   } catch (error) {
     console.error('Error fetching visualization:', error);
   }
@@ -153,6 +173,7 @@ async function submitFile() {
         bbox: result.bbox,
         text: result.text
       }));
+      latexResults.value.sort((a, b) => a.bbox[1] - b.bbox[1]);
       toggleResponse("Processing complete!");
       showlatex.value = true;
       
@@ -205,91 +226,163 @@ function deleteFile() {
     console.log('File deleted and state reset');
   }
 }
+
+const uploadedImageURL = computed(() => {
+  return uploadedFile.value ? URL.createObjectURL(uploadedFile.value) : null;
+});
+
+async function copyLatex(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Text/Latex copied: "+text);
+    console.log("latex copied");
+    console.log(imHeight.value+" "+imWidth.value+" "+scaledHeight.value+" "+imWidth.value);
+  } catch (err) {
+    console.error("Error:", err);
+  }
+}
 </script>
 
 <template>
-  <header style="background-color: rgb(70, 122, 253); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
-    <h1>Model Ensemble Tool</h1>
-    <p>To use the tool, please upload an image of the content that you want to be analyzed</p>
-    <p>{{ showResponse }}</p>
-  </header>
+  <div class="page">
+    <header style="background-color: rgb(67, 131, 134); color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
+      <h1>Latex Transcribe</h1>
+      <p>To use the tool, please upload an image of the content that you want to be analyzed</p>
+      <p>{{ showResponse }}</p>
+    </header>
 
-  <div class="demo">
-    <button @click="toggleImages">{{ showDemoImages ? 'Close Demo' : 'Open Demo' }}</button>
-    <div v-if="showDemoImages">
-      <div class="demoimages">
-        <div class="demoimage">
-          <div style="color: rgb(70, 122, 253);">Your Content</div>
-          <img :src="sampleImage" style="max-width: 400px;" />
-        </div>
-        <div class="demoimage">
-          <div style="color: rgb(70, 122, 253);">Your Result</div>
-          <img :src="sampleImageResult" style="max-width: 400px;" />
+    <div class="demo">
+      <button @click="toggleImages">{{ showDemoImages ? 'Close Demo' : 'Open Demo' }}</button>
+      <div v-if="showDemoImages">
+        <div class="demoimages">
+          <div class="demoimage">
+            <div style="color: rgb(67, 131, 134);">Your Content</div>
+            <img :src="sampleImage" style="max-width: 400px;" />
+          </div>
+          <div class="demoimage">
+            <div style="color: rgb(67, 131, 134);">Your Result</div>
+            <img :src="sampleImageResult" style="max-width: 400px;" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <div class="uploadcontainer">
-    <div class="upload" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop" 
-         :class="{ 'drag-over': dragOver, 'processing': isProcessing }">
-      <input type="file" ref="fileInput" accept="image/png" @change="onFileChange" 
-             style="display: none;" :disabled="isProcessing" />
-      <button class="button" @click="selectFile" :disabled="isProcessing">
-        Upload Image
-      </button>
-      <p>Or drag and drop an image here</p>
-      <div v-if="uploadedFile">
-        <button class="button" @click="submitFile" :disabled="isProcessing">
-          {{ isProcessing ? 'Processing...' : 'Submit Image' }}
+    
+    <div class="uploadcontainer">
+      <div class="upload" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop" 
+          :class="{ 'drag-over': dragOver, 'processing': isProcessing }">
+        <input type="file" ref="fileInput" accept="image/png, application/pdf" @change="onFileChange" 
+              style="display: none;" :disabled="isProcessing" />
+        <button class="button" @click="selectFile" :disabled="isProcessing">
+          Upload Image
         </button>
-        <button class="button" @click="deleteFile" :disabled="isProcessing">
-          Delete Image
-        </button>
-        <p>You've uploaded file: {{ uploadedFileName }}</p>
+        <p>Or drag and drop an image here</p>
+        <div v-if="uploadedFile">
+          <button style="margin-right: 10px;" class="button" @click="submitFile" :disabled="isProcessing">
+            {{ isProcessing ? 'Processing...' : 'Submit Image' }}
+          </button>
+          <button class="button" @click="deleteFile" :disabled="isProcessing">
+            Delete Image
+          </button>
+          <p>You've uploaded file: {{ uploadedFileName }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showProcessedImage || showlatex" class="results-container">
+      <div v-if="showProcessedImage" class="visualization-container">
+        <h3>Layout Detection</h3>
+        <div class = "overlay">
+          <img :src="processedImage" alt="Processed visualization" class="visualization-image" id="processedImageResize" />
+            <div v-for="(item, ind) in latexResults" v-if="imHeight && imWidth" :key="ind">
+              <button
+                @click="copyLatex(item.text)"
+                class="latex-btn"
+                :style="{
+                  left: ((item.bbox[0] / imWidth) * 100) + '%',
+                  top: ((item.bbox[1] / imHeight) * 100) + '%',
+                  width: ((item.bbox[2] - item.bbox[0]) / imWidth * 100) + '%',
+                  height: ((item.bbox[3] - item.bbox[1]) / imHeight * 100) + '%',
+                  // left:(((item.bbox[0] / imWidth) * 100) - 2) + '%',
+                  // top: (((item.bbox[1] / imHeight) * 100) - 2 + 33.33) + '%',
+                  // width: (((item.bbox[2] - item.bbox[0]) / imWidth * 100) + 4) + '%',
+                  // height: (((item.bbox[3] - item.bbox[1]) / imHeight * 100) + 4) + '%',
+                }"
+              >
+              </button>
+            </div>
+        </div>
+      </div>
+
+      <div v-if="showlatex" class="formulas-container">
+        <h3 style="text-align: center;" >Detected Formulas</h3>
+        <ol>
+          <li v-for="(item, ind) in latexResults" :key="ind">
+            <ul>
+              <li>Type: {{ item.task }}</li>
+              <li>Position: {{ item.bbox.join(', ') }}</li>
+              <li v-html="formula[ind]" @click="copyLatex(item.text)"></li>
+            </ul>
+          </li>
+        </ol>
       </div>
     </div>
   </div>
-
-  <div v-if="showProcessedImage || showlatex" class="results-container">
-    <div v-if="showProcessedImage" class="visualization-container">
-      <h3>Layout Detection</h3>
-      <img :src="processedImage" alt="Processed visualization" class="visualization-image" />
-    </div>
-
-    <div v-if="showlatex" class="formulas-container">
-      <h3>Detected Formulas</h3>
-      <ol>
-        <li v-for="(item, ind) in latexResults" :key="ind">
-          <ul>
-            <li>Type: {{ item.task }}</li>
-            <li>Position: {{ item.bbox.join(', ') }}</li>
-            <li v-html="formula[ind]"></li>
-          </ul>
-        </li>
-      </ol>
-    </div>
-  </div>
+  <footer class="footer">
+  </footer>
 </template>
 
 <style scoped>
 * {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+  font-family: -apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.latex-btn {
+  position: absolute;
+  border: 0px solid rgb(67, 131, 134);
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+.latex-btn:hover {
+  border: 2px solid rgb(67, 131, 134);
+  background-color: rgba(38, 48, 49, 0.4);
 }
 
 button {
   background-color: white;
-  color: rgb(70, 122, 253);
+  color: rgb(67, 131, 134);
   font-size: large;
   padding: 10px;
   justify-content: center;
+  border-radius: 5px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+  border-color: rgba(196, 196, 196, 1);
+}
+
+button:hover {
+  background-color: rgb(245, 245, 245);
+}
+
+.overlay {
+  position: relative;
+  display: inline-block;
 }
 
 .demo {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding-top: 60px;
+  padding-bottom: 10px;
 }
 
 .upload-container {
@@ -305,18 +398,19 @@ button {
   justify-content: center;
   align-items: center;
   padding-top: 100px;
-  border: 2px dashed rgb(70, 122, 253);
+  border: 2px dashed rgb(67, 131, 134);
+  border-radius: 5px;
   padding: 20px;
   text-align: center;
   cursor: pointer;
-  background-color: rgb(146, 177, 255);
+  background-color: rgb(148, 205, 208);
   color: white;
   width: 300px;
   margin: auto;
 }
 
 .upload.drag-over {
-  background-color: rgba(70, 122, 253, 0.8);
+  background-color: rgba(67, 131, 134, 0.8);
 }
 
 .upload.processing {
@@ -325,7 +419,7 @@ button {
 }
 
 button:hover {
-  background-color: rgb(70, 122, 253);
+  background-color: rgb(67, 131, 134);
   color: white;
 }
 
@@ -349,8 +443,8 @@ button:disabled:hover {
 
 .results-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  justify-content: center;
   gap: 2rem;
   padding: 2rem;
 }
@@ -387,4 +481,13 @@ button:disabled:hover {
 .formulas-container li {
   margin-bottom: 1rem;
 }
+
+.footer {
+  background-color: rgb(67, 131, 134);
+  margin-top: 20px;
+  color: white;
+  padding: 20px;
+  height: 100px;
+}
 </style>
+
