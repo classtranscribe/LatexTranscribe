@@ -270,7 +270,7 @@ async function copyLatex(text) {
     <div class="uploadcontainer">
       <div class="upload" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop" 
           :class="{ 'drag-over': dragOver, 'processing': isProcessing }">
-        <input type="file" ref="fileInput" accept="image/png" @change="onFileChange" 
+        <input type="file" ref="fileInput" accept="image/png, application/pdf" @change="onFileChange" 
               style="display: none;" :disabled="isProcessing" />
         <button class="button" @click="selectFile" :disabled="isProcessing">
           Upload Image
