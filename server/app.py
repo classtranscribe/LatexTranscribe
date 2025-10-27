@@ -25,8 +25,10 @@ logger = logging.getLogger("uvicorn.error")
 tasks = {}
 task_images = {}
 
-
 def concat_visualizations(visualizations):
+    if not visualizations: # Added this to check for empty visualizations
+        return None
+    
     # Convert all visualizations to PIL Images if they aren't already
     pil_images = []
     for _, vis in visualizations:
@@ -35,14 +37,13 @@ def concat_visualizations(visualizations):
         else:
             pil_images.append(Image.fromarray(vis))
 
-    # Calculate total height and max width
+    if not pil_images: # Add another check in case conversion fails
+        return None
+
     total_height = sum(img.height for img in pil_images)
     max_width = max(img.width for img in pil_images)
-
-    # Create new image with combined height
     combined_image = Image.new("RGB", (max_width, total_height))
 
-    # Paste images vertically
     y_offset = 0
     for img in pil_images:
         combined_image.paste(img, (0, y_offset))
@@ -60,12 +61,17 @@ async def task_update_generator(task_id: uuid.UUID):
     if task_id not in tasks:
         yield {"event": "error", "data": "Task not found"}
         return
-    visualizations, results = await aget_result(tasks[task_id])
-
+    
+    visualizations, normalized_results = await aget_result(tasks[task_id])
+    
+    # We are normalizing the results in the pipeline now
+    # normalized_results = normalize_for_taxonomy(mineru_results) 
+    
     task_images[task_id] = concat_visualizations(visualizations)
     logger.debug(f"{task_images[task_id]}")
     logger.debug(f"Task {task_id} finished")
-    yield {"event": "result", "data": json.dumps(results)}
+    
+    yield {"event": "result", "data": json.dumps(normalized_results)}
     yield {"event": "close", "data": "Connection closed"}
     del tasks[task_id]
     return
@@ -88,11 +94,10 @@ async def message_stream(task_id: uuid.UUID):
     response_class=Response,
 )
 async def get_task_image(task_id: uuid.UUID):
-    if task_id not in task_images:
+    if task_id not in task_images or task_images[task_id] is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
-    # Convert numpy array to PIL Image and then to PNG bytes
+    
     img_bytes = io.BytesIO()
-    # Image.fromarray(task_images[task_id]).save(img_bytes, format="PNG")
     task_images[task_id].save(img_bytes, format="PNG")
     return Response(content=img_bytes.getvalue(), media_type="image/png")
 
@@ -105,9 +110,7 @@ async def get_task_image(task_id: uuid.UUID):
 )
 async def upload_image(file: UploadFile = File(...)):
     try:
-        # Read image bytes from the uploaded file
         image_bytes = await file.read()
-        # Convert the bytes to a PIL Image
         image = Image.open(io.BytesIO(image_bytes))
 
         task_id = uuid.uuid4()
@@ -119,5 +122,5 @@ async def upload_image(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Error processing image: {e}")
         return JSONResponse(
-            content={"message": "Failure"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            content={"message": "Failure"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )

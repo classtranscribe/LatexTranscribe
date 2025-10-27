@@ -16,11 +16,12 @@ dependencies = [
     "paddleocr>=2.9.1",
     "paddlepaddle>=2.6.2",
     "sse-starlette>=2.2.1",
-    "struct-eqtable",
+    # "struct-eqtable",
     "supervision>=0.24.0",
     "supervisor>=4.2.5",
     "ultralytics>=8.3.72",
-    "unimernet>=0.2.3",
+    # "unimernet>=0.2.3",
+    "mineru[pipeline]==2.0.3",
 ]
 
 # CPU install: uv sync --extra cpu
